@@ -1,0 +1,124 @@
+import { IconButton, TableCell, TableRow, TextField } from "@mui/material";
+import { Check, PencilLine, Trash2, UserCheck } from "lucide-react";
+import { useState } from "react";
+
+const User = ({ user, setCurrentUser, SetIsUpdate }) => {
+	const [isEdit, setIsEdit] = useState(false);
+	const [firstname, setFirstname] = useState("");
+	const [lastname, setLastname] = useState("");
+	const [email, setEmail] = useState("");
+
+	const handleEdit = () => {
+		console.log(user);
+		setIsEdit(true);
+	};
+
+	const handleDelete = async () => {
+		const response = await fetch(`http://localhost:3310/api/users/${user.id}`, {
+			method: "DELETE",
+			headers: {
+				"content-Type": "application/json",
+			},
+		});
+
+		if (response.ok) {
+			SetIsUpdate((prev) => !prev);
+		}
+	};
+
+	const handleSave = async () => {
+		const newData = {
+			id: user.id,
+			firstname: firstname || user.firstname,
+			lastname: lastname || user.lastname,
+			email: email || user.email,
+		};
+
+		const response = await fetch(`http://localhost:3310/api/users/${user.id}`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(newData),
+		});
+
+		if (response.ok) {
+			SetIsUpdate((prev) => !prev);
+			setIsEdit(false);
+			setFirstname("");
+			setLastname("");
+			setEmail("");
+		}
+	};
+
+	return (
+		<TableRow hover sx={{ "&:hover": { bgcolor: "action.hover" } }}>
+			<TableCell>
+				{isEdit ? (
+					<>
+						<TextField
+							size="small"
+							variant="outlined"
+							type="text"
+							name="firstname"
+							value={firstname ? firstname : user.firstname}
+							onChange={(event) => setFirstname(event.target.value)}
+						/>
+					</>
+				) : (
+					user.firstname
+				)}
+			</TableCell>
+
+			<TableCell>
+				{isEdit ? (
+					<TextField
+						size="small"
+						variant="outlined"
+						type="text"
+						name="lastname"
+						value={lastname ? lastname : user.lastname}
+						onChange={(event) => setLastname(event.target.value)}
+					/>
+				) : (
+					user.lastname
+				)}
+			</TableCell>
+
+			<TableCell>
+				{isEdit ? (
+					<TextField
+						size="small"
+						variant="outlined"
+						type="email"
+						name="email"
+						value={email ? email : user.email}
+						onChange={(event) => setEmail(event.target.value)}
+					/>
+				) : (
+					user.email
+				)}
+			</TableCell>
+
+			<TableCell sx={{ display: "flex", gap: 0.5 }}>
+				{isEdit ? (
+					<IconButton color="success" onClick={handleSave}>
+						<Check size={18} />
+					</IconButton>
+				) : (
+					<IconButton color="primary" onClick={handleEdit}>
+						<PencilLine size={18} />
+					</IconButton>
+				)}
+				<IconButton color="info" onClick={() => setCurrentUser(user)}>
+					<UserCheck size={18} />
+				</IconButton>
+				<IconButton color="error" onClick={handleDelete}>
+					<Trash2 size={18} />
+				</IconButton>
+			</TableCell>
+		</TableRow>
+	);
+};
+
+export default User;
