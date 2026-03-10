@@ -13,9 +13,17 @@ import { useEffect, useState } from "react";
 import Profile from "./ProfileUser";
 import User from "./UserCard";
 
+interface UserType {
+	id: number;
+	firstname: string;
+	lastname: string;
+	email: string;
+	password: string;
+}
+
 export default function Users() {
-	const [users, setUsers] = useState([]);
-	const [currentUser, setCurrentUser] = useState(null);
+	const [users, setUsers] = useState<UserType[]>([]);
+	const [currentUser, setCurrentUser] = useState<UserType | null>(null);
 	const [isUpdate, SetIsUpdate] = useState(false);
 	console.log(currentUser);
 

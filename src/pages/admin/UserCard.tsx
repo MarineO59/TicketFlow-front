@@ -7,11 +7,12 @@ interface UserType {
 	firstname: string;
 	lastname: string;
 	email: string;
+	password: string;
 }
 
 interface Props {
 	user: UserType;
-	setCurrentUser: (user: UserType) => void;
+	setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>;
 	SetIsUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
