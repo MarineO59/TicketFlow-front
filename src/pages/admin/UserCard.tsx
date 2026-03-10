@@ -2,7 +2,20 @@ import { IconButton, TableCell, TableRow, TextField } from "@mui/material";
 import { Check, PencilLine, Trash2, UserCheck } from "lucide-react";
 import { useState } from "react";
 
-const User = ({ user, setCurrentUser, SetIsUpdate }) => {
+interface UserType {
+	id: number;
+	firstname: string;
+	lastname: string;
+	email: string;
+}
+
+interface Props {
+	user: UserType;
+	setCurrentUser: (user: UserType) => void;
+	SetIsUpdate: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 	const [isEdit, setIsEdit] = useState(false);
 	const [firstname, setFirstname] = useState("");
 	const [lastname, setLastname] = useState("");
