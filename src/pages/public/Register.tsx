@@ -167,6 +167,32 @@ export default function Register() {
 						helperText={errors.email}
 					/>
 
+					{/* TextField: password with InputAdornment (show/hide toggle) */}
+					<TextField
+						fullWidth
+						label="Password"
+						name="password"
+						type={showPassword ? "text" : "password"}
+						value={password}
+						onChange={(event) => setPassword(event.target.value)}
+						error={!!errors.password}
+						helperText={errors.password || "Min. 8 characters"}
+						sx={{ mb: 1 }}
+						InputProps={{
+							endAdornment: (
+								// InputAdornment + IconButton: the eye icon inside the input
+								<InputAdornment position="end">
+									<IconButton
+										onClick={() => setShowPassword((p) => !p)}
+										edge="end"
+									>
+										{showPassword ? <VisibilityOff /> : <Visibility />}
+									</IconButton>
+								</InputAdornment>
+							),
+						}}
+					/>
+
 					{/* Password strength bar */}
 					{password.length > 0 && (
 						<Box sx={{ mb: 2 }}>
