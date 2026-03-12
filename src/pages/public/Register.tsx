@@ -77,5 +77,97 @@ export default function Register() {
 		setIsSubmitting(true);
 	};
 
-	return <div>add css here</div>;
+	return (
+		<Box
+			sx={{
+				minHeight: "100vh",
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+				p: 2,
+			}}
+		>
+			<Paper
+				elevation={3}
+				sx={{ p: 4, width: "100%", maxWidth: 480, borderRadius: 3 }}
+			>
+				{/* Header */}
+				<Typography variant="h5" fontWeight={700} textAlign="center" mb={0.5}>
+					Create your account
+				</Typography>
+				<Typography
+					variant="body2"
+					color="text.secondary"
+					textAlign="center"
+					mb={3}
+				>
+					Already have an account?{" "}
+					<Link href="/login" underline="hover">
+						Sign in
+					</Link>
+				</Typography>
+
+				{/* OAuth Buttons */}
+				<Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+					<Button
+						fullWidth
+						variant="outlined"
+						startIcon={<GoogleIcon />}
+						sx={{ textTransform: "none" }}
+					>
+						Google
+					</Button>
+					<Button
+						fullWidth
+						variant="outlined"
+						startIcon={<GitHubIcon />}
+						sx={{ textTransform: "none" }}
+					>
+						GitHub
+					</Button>
+				</Box>
+
+				{/* Divider */}
+				<Divider sx={{ my: 2 }}>
+					<Typography variant="caption" color="text.secondary">
+						or register with email
+					</Typography>
+				</Divider>
+
+				<Box component="form" onSubmit={handleSubmit} noValidate>
+					{/* First name + Last name */}
+					<Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+						<TextField
+							label="First name"
+							fullWidth
+							value={firstname}
+							onChange={(event) => setFirstname(event.target.value)}
+							error={!!errors.firstname}
+							helperText={errors.firstname}
+						/>
+						<TextField
+							label="Last name"
+							fullWidth
+							value={lastname}
+							onChange={(event) => setLastname(event.target.value)}
+							error={!!errors.lastname}
+							helperText={errors.lastname}
+						/>
+					</Box>
+
+					{/* Email */}
+					<TextField
+						label="Email address"
+						type="email"
+						fullWidth
+						sx={{ mb: 2 }}
+						value={email}
+						onChange={(event) => setEmail(event.target.value)}
+						error={!!errors.email}
+						helperText={errors.email}
+					/>
+				</Box>
+			</Paper>
+		</Box>
+	);
 }
