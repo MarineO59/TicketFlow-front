@@ -7,6 +7,8 @@ import { Route, Link as RouterLink, Routes } from "react-router-dom";
 import About from "./pages/About";
 import Users from "./pages/admin/Users";
 import Home from "./pages/Home";
+import Login from "./pages/public/login";
+import Register from "./pages/public/Register";
 
 function Copyright() {
 	return (
@@ -37,6 +39,14 @@ export default function App() {
 					</Link>
 					<Link
 						component={RouterLink}
+						to="/register"
+						variant="h6"
+						underline="hover"
+					>
+						Register
+					</Link>
+					<Link
+						component={RouterLink}
 						to="/about"
 						variant="h6"
 						underline="hover"
@@ -56,6 +66,10 @@ export default function App() {
 
 			{/* Configuration des Routes */}
 			<Routes>
+				{/* public routes */}
+				<Route path="/login" element={<Login />} />
+				<Route path="/register" element={<Register />} />
+				{/* public routes */}
 				<Route path="/" element={<Home />} />
 				<Route path="/about" element={<About />} />
 				<Route path="/users" element={<Users />} />
