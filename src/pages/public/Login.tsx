@@ -8,6 +8,7 @@ import {
 import {
 	Box,
 	Button,
+	Alert,
 	Divider,
 	IconButton,
 	InputAdornment,
@@ -17,11 +18,18 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-export default function login() {
+export default function Login() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
-	const [isLogin, setIsLogin] = useState(false);
+	const [error, setError] = useState("")
+	const [loading, setLoading] = useState(false)
+
+	const handleSubmit = async (event: React.FormEvent) => {
+		event.preventDefault()
+		setError("")
+		setLoading(true)
+	}
 
 	return (
 		<Box
@@ -69,7 +77,9 @@ export default function login() {
 					</Typography>
 				</Divider>
 
-				<Box>
+				{error && <Alert severity="error">{error}</Alert>}
+
+				<Box component="form" onSubmit={handleSubmit} noValidate>
 					{/* Email */}
 					<TextField
 						label="Email address"
@@ -102,13 +112,15 @@ export default function login() {
 						}}
 					/>
 
-					<Button type="submit"
+					<Button
+						type="submit"
 						variant="contained"
 						fullWidth
 						size="large"
-						disabled={isLogin}
-						sx={{ textTransform: "none", fontWeight: 600 }}>
-						{"Se connecter"}
+						disabled={loading}
+						sx={{ textTransform: "none", fontWeight: 600 }}
+					>
+						{loading ? "Connexion..." : "Se connecter"}
 					</Button>
 				</Box>
 			</Paper>
