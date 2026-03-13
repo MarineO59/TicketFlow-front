@@ -6,9 +6,9 @@ import {
 } from "@mui/icons-material";
 
 import {
+	Alert,
 	Box,
 	Button,
-	Alert,
 	Divider,
 	IconButton,
 	InputAdornment,
@@ -22,14 +22,14 @@ export default function Login() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
-	const [error, setError] = useState("")
-	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = async (event: React.FormEvent) => {
-		event.preventDefault()
-		setError("")
-		setLoading(true)
-	}
+		event.preventDefault();
+		setError("");
+		setLoading(true);
+	};
 
 	return (
 		<Box
