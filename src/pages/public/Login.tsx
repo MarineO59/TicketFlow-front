@@ -1,7 +1,22 @@
-import { GitHub as GitHubIcon, Google as GoogleIcon, Visibility, VisibilityOff, } from "@mui/icons-material";
-import { Alert, Box, Button, Divider, IconButton, InputAdornment, Paper, TextField, Typography, } from "@mui/material";
+import {
+	GitHub as GitHubIcon,
+	Google as GoogleIcon,
+	Visibility,
+	VisibilityOff,
+} from "@mui/icons-material";
+import {
+	Alert,
+	Box,
+	Button,
+	Divider,
+	IconButton,
+	InputAdornment,
+	Paper,
+	TextField,
+	Typography,
+} from "@mui/material";
 import { useState } from "react";
-import {useAuth} from "../../context/AuthContext"
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
 	const [email, setEmail] = useState("");
@@ -10,19 +25,19 @@ export default function Login() {
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	const {handleLogin} = useAuth()
+	const { handleLogin } = useAuth();
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
 		setError("");
 		setLoading(true);
 
-		try{
-			await handleLogin({email: email, password: password})
-		} catch (error){
+		try {
+			await handleLogin({ email: email, password: password });
+		} catch (error) {
 			setError("Impossible de se connecter");
-		} finally{
-			setLoading(false)
+		} finally {
+			setLoading(false);
 		}
 	};
 
