@@ -20,7 +20,11 @@ interface AuthContextType {
 	handleLogout: () => void; // fonction pour se déconnecter
 }
 
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
+export default function AuthProvider({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
 	const [user, setUser] = useState<User | null>(null);
 
 	const handleLogin = async (infos: LoginInfos) => {
