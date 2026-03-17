@@ -3,6 +3,8 @@ import SendIcon from "@mui/icons-material/Send";
 import {
 	Avatar,
 	Box,
+	Button,
+	ButtonGroup,
 	IconButton,
 	InputAdornment,
 	List,
@@ -12,6 +14,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 interface CommentType {
 	id: number;
@@ -24,6 +27,8 @@ interface CommentType {
 export default function Comments() {
 	const [comment, setComment] = useState<CommentType[]>([]);
 	const [input, setInput] = useState("");
+	const { user } = useAuth();
+	const [isInternal, setIsInternal] = useState(false);
 
 	useEffect(() => {
 		const afficheComments = async () => {
@@ -50,7 +55,7 @@ export default function Comments() {
 			},
 			body: JSON.stringify({
 				content: input,
-				author_id: 3,
+				author_id: user?.id,
 				ticket_id: 1,
 			}),
 		});
@@ -118,7 +123,7 @@ export default function Comments() {
 				}}
 			>
 				{comment.map((msg) => {
-					const isUser = msg.author_id === 3;
+					const isUser = msg.author_id === user?.id;
 					return (
 						<ListItem
 							key={msg.id}
@@ -197,6 +202,23 @@ export default function Comments() {
 			<Box
 				sx={{ px: 2, py: 1.5, borderTop: "1px solid", borderColor: "divider" }}
 			>
+				{(user?.role === "admin" || user?.role === "technician") && (
+					<ButtonGroup size="small" sx={{ mb: 1 }}>
+						<Button
+							variant={!isInternal ? "contained" : "outlined"}
+							onClick={() => setIsInternal(false)}
+						>
+							💬 Public
+						</Button>
+						<Button
+							variant={isInternal ? "contained" : "outlined"}
+							color="warning"
+							onClick={() => setIsInternal(true)}
+						>
+							🔒 Note interne
+						</Button>
+					</ButtonGroup>
+				)}
 				<TextField
 					fullWidth
 					size="small"
