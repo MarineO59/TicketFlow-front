@@ -24,7 +24,8 @@ export default function App() {
 				backgroundSize: "cover",
 				backgroundPosition: "center",
 				color: "#fff",
-				display:"flex", flexDirection:"column"
+				display: "flex",
+				flexDirection: "column",
 			}}
 		>
 			<Container maxWidth="lg" sx={{ flexGrow: 1 }}>
@@ -38,7 +39,7 @@ export default function App() {
 							underline="hover"
 							color="white"
 						>
-							Accueil
+							Login
 						</Link>
 						<Link
 							component={RouterLink}
