@@ -18,7 +18,7 @@ export default function TicketEdit() {
 	const [description, setDescription] = useState("");
 	const [priority, setPriority] = useState("");
 	const [category_id, setCategoryId] = useState("");
-	const [_attachment, setAttachment] = useState<File | null>(null); //  TODO à brancher avec la route attachments du back, puis enlever le _ pour éviter les warnings de variable non utilisée
+	const [_attachment, _setAttachment] = useState<File | null>(null); //  TODO à brancher avec la route attachments du back, puis enlever le _ pour éviter les warnings de variable non utilisée
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
