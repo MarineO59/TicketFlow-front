@@ -9,6 +9,7 @@ import About from "./pages/About";
 import Categories from "./pages/admin/Categories";
 import Comments from "./pages/admin/Comments";
 import Dashboard from "./pages/admin/Dashboard";
+import TicketEdit from "./pages/admin/TicketEdit";
 import TicketForm from "./pages/admin/TicketForm";
 import Tickets from "./pages/admin/Tickets";
 import Users from "./pages/admin/Users";
@@ -95,6 +96,7 @@ export default function App() {
 					{/* Only for Admins/tech */}
 					<Route path="/admin/dashboard" element={<Dashboard />} />
 					<Route path="/tickets" element={<Tickets />} />
+					<Route path="/tickets/:id/edit" element={<TicketEdit />} />
 				</Routes>
 			</Container>
 			<Footer />
