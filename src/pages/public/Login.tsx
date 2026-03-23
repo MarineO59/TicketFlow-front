@@ -26,7 +26,7 @@ export default function Login() {
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	const { handleLogin, user } = useAuth();
+	const { handleLogin } = useAuth();
 	const navigate = useNavigate();
 
 	const handleSubmit = async (event: React.FormEvent) => {

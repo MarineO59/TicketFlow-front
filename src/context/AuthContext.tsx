@@ -27,7 +27,7 @@ export default function AuthProvider({
 }) {
 	const [user, setUser] = useState<User | null>(null);
 
-	const handleLogin = async (infos: LoginInfos) => {
+	const handleLogin = async (infos: LoginInfos): Promise<User> => {
 		const newData = { email: infos.email, password: infos.password };
 
 		const response = await fetch("http://localhost:3310/api/auth/signin", {
