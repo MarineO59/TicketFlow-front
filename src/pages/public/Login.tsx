@@ -26,7 +26,7 @@ export default function Login() {
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	const { handleLogin } = useAuth();
+	const { handleLogin, user } = useAuth();
 	const navigate = useNavigate();
 
 	const handleSubmit = async (event: React.FormEvent) => {
@@ -35,13 +35,17 @@ export default function Login() {
 		setLoading(true);
 
 		try {
-			await handleLogin({ email: email, password: password });
+			const userData = await handleLogin({ email: email, password: password });
+			if (userData.role === "admin" || userData.role === "technician") {
+				navigate("/admin/dashboard");
+			} else {
+				navigate("/");
+			}
 		} catch (_error) {
 			setError("Impossible de se connecter");
 		} finally {
 			setLoading(false);
 		}
-		navigate("/dashboard");
 	};
 
 	return (

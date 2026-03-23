@@ -43,6 +43,7 @@ export default function AuthProvider({
 		const data = await response.json();
 
 		setUser(data);
+		return data;
 	};
 
 	const handleLogout = () => setUser(null);
