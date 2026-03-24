@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import {
 	formatDate,
 	translateCategory,
@@ -31,9 +32,14 @@ interface TicketType {
 export default function Tickets() {
 	const [ticket, setTicket] = useState<TicketType[]>([]);
 	const navigate = useNavigate();
+	const { token } = useAuth();
 
 	useEffect(() => {
-		fetch("http://localhost:3310/api/tickets/")
+		fetch("http://localhost:3310/api/tickets/", {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		})
 			.then((response) => response.json())
 			.then((data) => setTicket(data))
 			.catch((error) => console.error(error));

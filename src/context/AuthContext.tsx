@@ -16,6 +16,7 @@ interface User {
 // décrit ce qu'il va se passer pour l'utilisateur
 interface AuthContextType {
 	user: User | null; // l'utilisateur connecté, ou null si déconnecté
+	token: string | null; // le token d'authentification, ou null si déconnecté
 	handleLogin: (infos: LoginInfos) => Promise<User>; // fonction pour se connecter
 	handleLogout: () => void; // fonction pour se déconnecter
 }
@@ -25,7 +26,14 @@ export default function AuthProvider({
 }: {
 	children: React.ReactNode;
 }) {
-	const [user, setUser] = useState<User | null>(null);
+	const [user, setUser] = useState<User | null>(
+		localStorage.getItem("token")
+			? JSON.parse(atob(localStorage.getItem("token")?.split(".")[1]))
+			: null,
+	);
+	const [token, setToken] = useState<string | null>(
+		localStorage.getItem("token"),
+	);
 
 	const handleLogin = async (infos: LoginInfos): Promise<User> => {
 		const newData = { email: infos.email, password: infos.password };
@@ -41,6 +49,7 @@ export default function AuthProvider({
 			throw new Error("fonctionne pas");
 		}
 		const data = await response.json();
+		setToken(data.token);
 
 		setUser(data.userDTO);
 		localStorage.setItem("token", data.token);
@@ -53,7 +62,7 @@ export default function AuthProvider({
 	};
 
 	return (
-		<AuthContext value={{ user, handleLogin, handleLogout }}>
+		<AuthContext value={{ user, token, handleLogin, handleLogout }}>
 			{children}
 		</AuthContext>
 	);
