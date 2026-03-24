@@ -22,18 +22,24 @@ interface CommentType {
 	is_internal: number;
 }
 
-export default function Comments() {
+interface CommentsProps {
+	ticketId: number;
+}
+
+export default function Comments({ ticketId }: CommentsProps) {
 	const [comment, setComment] = useState<CommentType[]>([]);
 	const [input, setInput] = useState("");
 
 	useEffect(() => {
 		const afficheComments = async () => {
-			const response = await fetch("http://localhost:3310/api/comments");
+			const response = await fetch(
+				`http://localhost:3310/api/comments/ticket/${ticketId}`,
+			);
 			const data = await response.json();
 			setComment(data);
 		};
 		afficheComments();
-	}, []);
+	}, [ticketId]);
 
 	const handleDelete = async (id: number) => {
 		const response = await fetch(`http://localhost:3310/api/comments/${id}`, {
@@ -53,7 +59,7 @@ export default function Comments() {
 			body: JSON.stringify({
 				content: input,
 				author_id: 1,
-				ticket_id: 1,
+				ticket_id: ticketId,
 			}),
 		});
 		if (response.ok) {
