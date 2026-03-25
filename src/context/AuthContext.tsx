@@ -42,11 +42,15 @@ export default function AuthProvider({
 		}
 		const data = await response.json();
 
-		setUser(data);
-		return data;
+		setUser(data.userDTO);
+		localStorage.setItem("token", data.token);
+		return data.userDTO;
 	};
 
-	const handleLogout = () => setUser(null);
+	const handleLogout = () => {
+		setUser(null);
+		localStorage.removeItem("token");
+	};
 
 	return (
 		<AuthContext value={{ user, handleLogin, handleLogout }}>

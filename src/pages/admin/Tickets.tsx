@@ -11,9 +11,9 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchWithToken } from "../../utils/api";
 import {
 	formatDate,
-	translateCategory,
 	translatePriority,
 	translateStatus,
 } from "../../utils/translations";
@@ -24,6 +24,7 @@ interface TicketType {
 	status: string;
 	priority: string;
 	category_id: number;
+	category_name: string;
 	created_at: string;
 	resolved_at: string | null;
 }
@@ -33,7 +34,7 @@ export default function Tickets() {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		fetch("http://localhost:3310/api/tickets/")
+		fetchWithToken("http://localhost:3310/api/tickets/")
 			.then((response) => response.json())
 			.then((data) => setTicket(data))
 			.catch((error) => console.error(error));
@@ -72,7 +73,7 @@ export default function Tickets() {
 								<TableCell>{t.title}</TableCell>
 								<TableCell>{translateStatus(t.status)}</TableCell>
 								<TableCell>{translatePriority(t.priority)}</TableCell>
-								<TableCell>{translateCategory(t.category_id)}</TableCell>
+								<TableCell>{t.category_name}</TableCell>
 								<TableCell>{formatDate(t.created_at)}</TableCell>
 							</TableRow>
 						))}
