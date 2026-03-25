@@ -37,7 +37,9 @@ export default function Comments({ ticketId }: CommentsProps) {
 
 	useEffect(() => {
 		const afficheComments = async () => {
-			const response = await fetch("http://localhost:3310/api/comments");
+			const response = await fetchWithToken(
+				`http://localhost:3310/api/comments/ticket/${ticketId}`,
+			);
 			const data = await response.json();
 			setComment(data);
 		};
@@ -57,17 +59,18 @@ export default function Comments({ ticketId }: CommentsProps) {
 	};
 
 	const sendMessage = async () => {
-		const response = await fetch(`http://localhost:3310/api/comments`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
+		const response = await fetchWithToken(
+			`http://localhost:3310/api/comments`,
+			{
+				method: "POST",
+				body: JSON.stringify({
+					content: input,
+					author_id: 1,
+					ticket_id: ticketId,
+					is_internal: isInternal,
+				}),
 			},
-			body: JSON.stringify({
-				content: input,
-				author_id: 1,
-				ticket_id: 1,
-			}),
-		});
+		);
 		if (response.ok) {
 			const nouveauComment = await response.json();
 			setComment([...comment, nouveauComment]);
