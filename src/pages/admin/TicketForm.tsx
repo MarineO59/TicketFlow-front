@@ -22,6 +22,7 @@ export default function TicketForm() {
 		e.preventDefault();
 
 		// TODO: ajouter l'attachment dans FormData quand la route du back sera prête
+		//TODO:  ajouter l'attachment dansFormData quand la  route du back sera prête
 		await fetchWithToken("http://localhost:3310/api/tickets", {
 			method: "POST",
 			body: JSON.stringify({
