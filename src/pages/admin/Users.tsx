@@ -57,7 +57,7 @@ export default function Users() {
 					mb: 3,
 				}}
 			>
-				<Card sx={{ p: 2 }}>
+				<Card sx={{ p: 2, bgcolor: "#00FFD1", color: "white" }}>
 					<Typography sx={{ fontSize: "11px", color: "text.secondary" }}>
 						Utilisateurs
 					</Typography>
@@ -68,7 +68,7 @@ export default function Users() {
 						+ 3 ce mois
 					</Typography>
 				</Card>
-				<Card sx={{ p: 2 }}>
+				<Card sx={{ p: 2, bgcolor: "#FF6B6B", color: "white" }}>
 					<Typography sx={{ fontSize: "11px", color: "text.secondary" }}>
 						Ticket en cours
 					</Typography>
@@ -77,7 +77,7 @@ export default function Users() {
 						12 en attente
 					</Typography>
 				</Card>
-				<Card sx={{ p: 2 }}>
+				<Card sx={{ p: 2, bgcolor: "#FFD93D", color: "white" }}>
 					<Typography sx={{ fontSize: "11px", color: "text.secondary" }}>
 						Catégories
 					</Typography>
@@ -86,7 +86,7 @@ export default function Users() {
 						2 inactives
 					</Typography>
 				</Card>
-				<Card sx={{ p: 2 }}>
+				<Card sx={{ p: 2, bgcolor: "#A78BFA", color: "white" }}>
 					<Typography sx={{ fontSize: "11px", color: "text.secondary" }}>
 						Tickets résolus
 					</Typography>
@@ -102,18 +102,33 @@ export default function Users() {
 				label="Rechercher par prénom, nom ou email"
 				variant="outlined"
 				fullWidth
-				sx={{ mb: 3 }}
+				sx={{
+					mb: 3,
+					bgcolor: "white",
+					borderRadius: 2,
+					"& .MuiOutlinedInput-root": {
+						"& fieldset": {
+							borderColor: "#000000",
+							borderWidth: "1px",
+						},
+						"&:hover fieldset": {
+							borderColor: "#00FFD1",
+						},
+						"&.Mui-focused fieldset": {
+							borderColor: "#00FFD1",
+						},
+					},
+				}}
 				value={search}
 				onChange={(e) => setSearch(e.target.value)}
 			/>
 			<TableContainer component={Paper}>
 				<Table>
 					<TableHead>
-						<TableRow>
+						<TableRow sx={{ bgcolor: "#2f5071" }}>
 							<TableCell
 								sx={{
 									fontWeight: "bold",
-									bgcolor: "primary.main",
 									color: "white",
 								}}
 							>
@@ -122,7 +137,6 @@ export default function Users() {
 							<TableCell
 								sx={{
 									fontWeight: "bold",
-									bgcolor: "primary.main",
 									color: "white",
 								}}
 							>
@@ -131,7 +145,6 @@ export default function Users() {
 							<TableCell
 								sx={{
 									fontWeight: "bold",
-									bgcolor: "primary.main",
 									color: "white",
 								}}
 							>
@@ -140,7 +153,6 @@ export default function Users() {
 							<TableCell
 								sx={{
 									fontWeight: "bold",
-									bgcolor: "primary.main",
 									color: "white",
 								}}
 							>
