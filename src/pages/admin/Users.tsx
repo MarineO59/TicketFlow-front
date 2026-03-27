@@ -8,6 +8,7 @@ import {
 	TableContainer,
 	TableHead,
 	TableRow,
+	TextField,
 	Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -28,6 +29,7 @@ export default function Users() {
 	const [currentUser, setCurrentUser] = useState<UserType | null>(null);
 	const [isUpdate, SetIsUpdate] = useState(false);
 	console.log(currentUser);
+	const [search, setSearch] = useState(""); // State pour la recherche
 
 	useEffect(() => {
 		fetchWithToken("http://localhost:3310/api/users/")
@@ -35,7 +37,13 @@ export default function Users() {
 			.then((data) => setUsers(data))
 			.catch((error) => console.error(error));
 	}, [isUpdate]);
-
+	// Filtrer les utilisateurs en fonction de la recherche
+	const filteredUsers = users.filter(
+		(user) =>
+			user.firstname.toLowerCase().includes(search.toLowerCase()) ||
+			user.lastname.toLowerCase().includes(search.toLowerCase()) ||
+			user.email.toLowerCase().includes(search.toLowerCase()),
+	);
 	return (
 		<Box sx={{ p: 3 }}>
 			<Typography variant="h4" gutterBottom>
@@ -90,6 +98,14 @@ export default function Users() {
 					</Typography>
 				</Card>
 			</Box>
+			<TextField
+				label="Rechercher par prénom, nom ou email"
+				variant="outlined"
+				fullWidth
+				sx={{ mb: 3 }}
+				value={search}
+				onChange={(e) => setSearch(e.target.value)}
+			/>
 			<TableContainer component={Paper}>
 				<Table>
 					<TableHead>
@@ -133,8 +149,8 @@ export default function Users() {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{users.length > 0 ? (
-							users.map((user) => (
+						{filteredUsers.length > 0 ? (
+							filteredUsers.map((user) => (
 								<User
 									key={user.id}
 									user={user}
