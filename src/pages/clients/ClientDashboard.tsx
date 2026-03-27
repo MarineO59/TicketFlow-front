@@ -30,6 +30,7 @@ interface TicketType {
 	category_id: number;
 	category_name: string;
 	created_at: string;
+    client_id: number;
 	resolved_at: string | null;
 }
 
@@ -43,7 +44,9 @@ export default function ClientDashboard() {
 			.then((response) => response.json())
 			.then((data) => {
 				console.log(data);
-				setTicket(data.filter((ticket: TicketType) => ticket.client_id === user?.id));
+				setTicket(
+					data.filter((ticket: TicketType) => ticket.client_id === user?.id),
+				);
 			})
 
 			.catch((error) => console.error(error));
