@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -20,11 +21,23 @@ interface AuthContextType {
 	handleLogout: () => void; // fonction pour se déconnecter
 }
 
-export default function AuthProvider({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+
+export default function AuthProvider({ children }: { children: React.ReactNode; }) {
+
+	useEffect(() => {
+		const token = localStorage.getItem("token")
+
+		if (token) {
+			try {
+				const decoded = jwtDecode<User>(token)
+				setUser({ id: decoded.id, email: decoded.email, role: decoded.role })
+			} catch (error) {
+				console.error("Token invalide :", error);
+				localStorage.removeItem('token');
+			}
+		}
+	}, [])
+
 	const [user, setUser] = useState<User | null>(null);
 
 	const handleLogin = async (infos: LoginInfos): Promise<User> => {

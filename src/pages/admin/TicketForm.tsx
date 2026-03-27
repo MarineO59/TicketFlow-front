@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchWithToken } from "../../utils/api";
+import { useAuth } from "../../context/AuthContext";
 
 export default function TicketForm() {
 	const [title, setTitle] = useState("");
@@ -17,6 +18,7 @@ export default function TicketForm() {
 	const [category_id, setCategoryId] = useState("");
 	const [_attachment, setAttachment] = useState<File | null>(null); //  TODO à brancher avec la route attachments du back, puis enlever le _ pour éviter les warnings de variable non utilisée
 	const navigate = useNavigate();
+	const { user } = useAuth();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -30,7 +32,7 @@ export default function TicketForm() {
 				priority,
 				category_id,
 				status: "open",
-				client_id: 3,
+				client_id: user?.id,
 				technician_id: null,
 			}),
 		});
