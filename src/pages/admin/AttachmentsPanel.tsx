@@ -2,24 +2,23 @@
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
-	Box,
-	Button,
-	IconButton,
-	List,
-	ListItem,
-	ListItemText,
-	Paper,
-	Typography,
+  Box,
+  Button,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Typography,
 } from "@mui/material";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { fetchWithToken } from "../../utils/api";
 
 export interface Attachment {
-	id: string;
-	filename: string;
-	url?: string;
-	createdAt?: string;
-	size?: number;
-	mimeType?: string;
+  id: string;
+  filename: string;
+  url?: string;
+  createdAt?: string;
 }
 
 type Props = {
