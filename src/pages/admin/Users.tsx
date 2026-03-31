@@ -1,6 +1,5 @@
 import {
 	Box,
-	Card,
 	Paper,
 	Table,
 	TableBody,
@@ -10,6 +9,8 @@ import {
 	TableRow,
 	TextField,
 	Typography,
+	Tab,
+	Tabs
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fetchWithToken } from "../../utils/api";
@@ -30,6 +31,7 @@ export default function Users() {
 	const [currentUser, setCurrentUser] = useState<UserType | null>(null);
 	const [isUpdate, SetIsUpdate] = useState(false);
 	const [search, setSearch] = useState("");
+	const [activeTab, setActiveTab] = useState(0)
 
 	useEffect(() => {
 		fetchWithToken("http://localhost:3310/api/users/")
@@ -45,11 +47,15 @@ export default function Users() {
 			user.email.toLowerCase().includes(search.toLowerCase()),
 	);
 
+	const staffUsers = filteredUsers.filter(user => user.role !== "client")
+	const clientsUsers = filteredUsers.filter(user => user.role === "client")
+
 	return (
 		<Box sx={{ p: 3 }}>
 			<Typography variant="h4" gutterBottom>
 				Gestion des utilisateurs
 			</Typography>
+
 			<TextField
 				label="Rechercher par prénom, nom ou email"
 				variant="outlined"
@@ -68,6 +74,10 @@ export default function Users() {
 				onChange={(e) => setSearch(e.target.value)}
 			/>
 			<TableContainer component={Paper}>
+				<Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
+					<Tab label="Staff" />
+					<Tab label="Nos Clients" />
+				</Tabs>
 				<Table>
 					<TableHead>
 						<TableRow sx={{ bgcolor: "#2f5071" }}>
@@ -89,20 +99,14 @@ export default function Users() {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{filteredUsers.length > 0 ? (
-							filteredUsers.map((user) => (
+						{(activeTab === 0 ? staffUsers : clientsUsers).map((user) => (
 								<User
 									key={user.id}
 									user={user}
 									setCurrentUser={setCurrentUser}
 									SetIsUpdate={SetIsUpdate}
 								/>
-							))
-						) : (
-							<TableRow>
-								<TableCell colSpan={4}>No Data</TableCell>
-							</TableRow>
-						)}
+							))}
 					</TableBody>
 				</Table>
 			</TableContainer>
