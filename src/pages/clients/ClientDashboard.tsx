@@ -94,7 +94,6 @@ export default function ClientDashboard() {
 
 	return (
 		<Container maxWidth="lg" sx={{ py: 4 }}>
-
 			{/* ── Header ── */}
 			<Stack
 				direction="row"
@@ -124,7 +123,10 @@ export default function ClientDashboard() {
 						variant="outlined"
 						color="error"
 						startIcon={<LogoutIcon />}
-						onClick={() => { handleLogout(); navigate("/login"); }}
+						onClick={() => {
+							handleLogout();
+							navigate("/login");
+						}}
 						sx={{ textTransform: "none" }}
 					>
 						Déconnexion
@@ -140,8 +142,12 @@ export default function ClientDashboard() {
 					{ label: "Résolus", value: resolvedCount },
 				].map((stat) => (
 					<Paper key={stat.label} variant="outlined" sx={{ p: 2, flex: 1 }}>
-						<Typography variant="body2" color="text.secondary">{stat.label}</Typography>
-						<Typography variant="h4" fontWeight={600}>{stat.value}</Typography>
+						<Typography variant="body2" color="text.secondary">
+							{stat.label}
+						</Typography>
+						<Typography variant="h4" fontWeight={600}>
+							{stat.value}
+						</Typography>
 					</Paper>
 				))}
 			</Stack>
@@ -168,7 +174,10 @@ export default function ClientDashboard() {
 							<TableRow
 								key={ticket.id}
 								onClick={() => navigate(`/tickets/${ticket.id}/edit`)}
-								sx={{ cursor: "pointer", "&:hover": { bgcolor: "action.hover" } }}
+								sx={{
+									cursor: "pointer",
+									"&:hover": { bgcolor: "action.hover" },
+								}}
 							>
 								<TableCell>{ticket.id}</TableCell>
 								<TableCell>{ticket.title}</TableCell>
@@ -194,7 +203,6 @@ export default function ClientDashboard() {
 					</TableBody>
 				</Table>
 			</TableContainer>
-
 		</Container>
 	);
 }
