@@ -103,9 +103,9 @@ export default function ClientDashboard() {
 			>
 				<Box>
 					<Typography variant="h5" fontWeight={600}>
-						Bonjour, {user?.name ?? "Client"}
+						Bonjour, Victor
 					</Typography>
-					<Typography variant="body2" color="text.secondary">
+					<Typography variant="body2" color="white">
 						Voici un aperçu de vos tickets de support
 					</Typography>
 				</Box>
@@ -120,7 +120,7 @@ export default function ClientDashboard() {
 						Nouveau ticket
 					</Button>
 					<Button
-						variant="outlined"
+						variant="contained"
 						color="error"
 						startIcon={<LogoutIcon />}
 						onClick={() => {
