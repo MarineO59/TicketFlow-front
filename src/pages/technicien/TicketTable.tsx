@@ -53,18 +53,14 @@ export default function TicketTable({
 			if (tabStatus !== "all" && t.status !== tabStatus) return false;
 			if (filterPriority !== "all" && t.priority !== filterPriority)
 				return false;
-			if (
-				search &&
-				!t.title.toLowerCase().includes(search.toLowerCase())
-			)
+			if (search && !t.title.toLowerCase().includes(search.toLowerCase()))
 				return false;
 			return true;
 		})
 		.sort((a, b) => {
 			if (sortBy === "date")
 				return (
-					new Date(b.created_at).getTime() -
-					new Date(a.created_at).getTime()
+					new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
 				);
 			if (sortBy === "priority") {
 				const order = { critical: 0, high: 1, medium: 2, low: 3 };
@@ -195,9 +191,7 @@ export default function TicketTable({
 								>
 									#{ticket.id}
 								</TableCell>
-								<TableCell sx={{ fontSize: 13 }}>
-									{ticket.title}
-								</TableCell>
+								<TableCell sx={{ fontSize: 13 }}>{ticket.title}</TableCell>
 								<TableCell sx={{ fontSize: 13 }}>
 									{ticket.category_name}
 								</TableCell>
@@ -214,9 +208,7 @@ export default function TicketTable({
 												width: 10,
 												height: 10,
 												borderRadius: "50%",
-												bgcolor:
-													PRIORITY_COLORS[ticket.priority] ??
-													"#888",
+												bgcolor: PRIORITY_COLORS[ticket.priority] ?? "#888",
 												flexShrink: 0,
 											}}
 										/>
@@ -233,9 +225,7 @@ export default function TicketTable({
 										sx={{ fontSize: 11 }}
 									/>
 								</TableCell>
-								<TableCell
-									sx={{ fontSize: 12, color: "text.secondary" }}
-								>
+								<TableCell sx={{ fontSize: 12, color: "text.secondary" }}>
 									{timeAgo(ticket.created_at)}
 								</TableCell>
 								<TableCell>
@@ -243,9 +233,7 @@ export default function TicketTable({
 										size="small"
 										onClick={() => onSelectTicket(ticket)}
 										color={
-											selectedTicketId === ticket.id
-												? "primary"
-												: "default"
+											selectedTicketId === ticket.id ? "primary" : "default"
 										}
 									>
 										<VisibilityIcon fontSize="small" />
