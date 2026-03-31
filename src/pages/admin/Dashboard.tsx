@@ -37,6 +37,7 @@ export default function Users() {
 			.then((data) => setUsers(data))
 			.catch((error) => console.error(error));
 	}, [isUpdate]);
+
 	// Filtrer les utilisateurs en fonction de la recherche
 	const filteredUsers = users.filter(
 		(user) =>
@@ -44,6 +45,7 @@ export default function Users() {
 			user.lastname.toLowerCase().includes(search.toLowerCase()) ||
 			user.email.toLowerCase().includes(search.toLowerCase()),
 	);
+	
 	return (
 		<Box sx={{ p: 3 }}>
 			<Typography variant="h4" gutterBottom>

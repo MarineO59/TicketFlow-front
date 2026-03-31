@@ -1,7 +1,84 @@
-export default function Dashboard() {
-	return (
-		<div>
-			<h1>Bonjour Victor, ceci est votre dashboard</h1>
-		</div>
-	);
+import {
+  Box, Card, Paper, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, TextField, Typography,
+} from "@mui/material";
+import { useEffect, useState } from "react";
+import { fetchWithToken } from "../../utils/api";
+import Profile from "./ProfileUser";
+import User from "./UserCard";
+
+interface UserType {
+  id: number;
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+}
+
+export default function Users() {
+  const [users, setUsers] = useState<UserType[]>([]);
+  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
+  const [isUpdate, SetIsUpdate] = useState(false);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetchWithToken("http://localhost:3310/api/users/")
+      .then((response) => response.json())
+      .then((data) => setUsers(data))
+      .catch((error) => console.error(error));
+  }, [isUpdate]);
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.firstname.toLowerCase().includes(search.toLowerCase()) ||
+      user.lastname.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  return (
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom>Gestion des utilisateurs</Typography>
+      <TextField
+        label="Rechercher par prénom, nom ou email"
+        variant="outlined"
+        fullWidth
+        sx={{
+          mb: 3,
+          bgcolor: "white",
+          borderRadius: 2,
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": { borderColor: "#000000", borderWidth: "1px" },
+            "&:hover fieldset": { borderColor: "#00FFD1" },
+            "&.Mui-focused fieldset": { borderColor: "#00FFD1" },
+          },
+        }}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ bgcolor: "#2f5071" }}>
+              <TableCell sx={{ fontWeight: "bold", color: "white" }}>Prénom</TableCell>
+              <TableCell sx={{ fontWeight: "bold", color: "white" }}>Nom</TableCell>
+              <TableCell sx={{ fontWeight: "bold", color: "white" }}>Email</TableCell>
+              <TableCell sx={{ fontWeight: "bold", color: "white" }}>Modifier</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((user) => (
+                <User key={user.id} user={user} setCurrentUser={setCurrentUser} SetIsUpdate={SetIsUpdate} />
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4}>No Data</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {currentUser && <Profile currentUser={currentUser} />}
+    </Box>
+  );
 }
