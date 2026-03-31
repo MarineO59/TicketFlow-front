@@ -1,26 +1,25 @@
 import AddIcon from "@mui/icons-material/Add";
+import LogoutIcon from "@mui/icons-material/Logout";
 import {
-	Box,
-	Button,
-	Container,
-	Paper,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
-	Typography,
+  Box,
+  Button,
+  Chip,
+  Container,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { fetchWithToken } from "../../utils/api";
-import {
-	formatDate,
-	translatePriority,
-	translateStatus,
-} from "../../utils/translations";
+import { formatDate, translatePriority, translateStatus } from "../../utils/translations";
 
 interface TicketType {
 	id: number;
@@ -32,6 +31,26 @@ interface TicketType {
 	created_at: string;
 	client_id: number;
 	resolved_at: string | null;
+}
+
+// Couleur du badge selon le statut
+function getStatusColor(status: string): "default" | "warning" | "success" | "error" | "info" {
+  switch (status) {
+    case "open": return "info";
+    case "pending": return "warning";
+    case "resolved": return "success";
+    default: return "default";
+  }
+}
+
+// Couleur du badge selon la priorité
+function getPriorityColor(priority: string): "default" | "warning" | "error" | "success" {
+  switch (priority) {
+    case "high": return "error";
+    case "medium": return "warning";
+    case "low": return "success";
+    default: return "default";
+  }
 }
 
 export default function ClientDashboard() {
