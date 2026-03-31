@@ -1,4 +1,5 @@
-import { IconButton, TableCell, TableRow, TextField } from "@mui/material";
+import { IconButton, TableCell, TableRow, TextField, MenuItem } from "@mui/material";
+import { fetchWithToken } from "../../utils/api";
 import { Check, PencilLine, Trash2, UserCheck } from "lucide-react";
 import { useState } from "react";
 
@@ -8,6 +9,7 @@ interface UserType {
 	lastname: string;
 	email: string;
 	password: string;
+	role: string
 }
 
 interface Props {
@@ -21,6 +23,7 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 	const [firstname, setFirstname] = useState("");
 	const [lastname, setLastname] = useState("");
 	const [email, setEmail] = useState("");
+	const [role, setRole] = useState("")
 
 	const handleEdit = () => {
 		console.log(user);
@@ -46,9 +49,10 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 			firstname: firstname || user.firstname,
 			lastname: lastname || user.lastname,
 			email: email || user.email,
+			role: role || user.role
 		};
 
-		const response = await fetch(`http://localhost:3310/api/users/${user.id}`, {
+		const response = await fetchWithToken(`http://localhost:3310/api/users/${user.id}`, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
@@ -109,6 +113,30 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 					/>
 				) : (
 					user.email
+				)}
+			</TableCell>
+
+			<TableCell>
+				{isEdit ? (
+					user.role === "client" ? (
+						user.role
+					) : (
+					<TextField
+						select
+						size="small"
+						variant="outlined"
+						type="role"
+						name="role"
+						value={role ? role : user.role}
+						onChange={(event) => setRole(event.target.value)}
+						
+					>
+					<MenuItem value="admin">Admin</MenuItem>
+					<MenuItem value="technician">Technicien</MenuItem>
+					</TextField>
+					)
+				) : (
+					user.role
 				)}
 			</TableCell>
 

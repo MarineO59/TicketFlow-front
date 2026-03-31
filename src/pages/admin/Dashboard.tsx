@@ -45,7 +45,7 @@ export default function Users() {
 			user.lastname.toLowerCase().includes(search.toLowerCase()) ||
 			user.email.toLowerCase().includes(search.toLowerCase()),
 	);
-	
+
 	return (
 		<Box sx={{ p: 3 }}>
 			<Typography variant="h4" gutterBottom>
