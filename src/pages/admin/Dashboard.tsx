@@ -12,7 +12,13 @@ import {
 	Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchWithToken } from "../../utils/api";
+import {
+	formatDate,
+	translatePriority,
+	translateStatus,
+} from "../../utils/translations";
 import Profile from "./ProfileUser";
 import User from "./UserCard";
 
@@ -46,6 +52,7 @@ export default function Dashboard() {
 	const [search, setSearch] = useState("");
 	const [tickets, setTickets] = useState<TicketType[]>([]);
 	const [categories, setCategories] = useState<CategoryType[]>([]);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		fetchWithToken("http://localhost:3310/api/tickets/")
@@ -154,6 +161,39 @@ export default function Dashboard() {
 				value={search}
 				onChange={(e) => setSearch(e.target.value)}
 			/>
+			<TableContainer component={Paper} sx={{ width: "80%" }}>
+				<Table>
+					<TableHead>
+						<TableRow>
+							<TableCell>ID</TableCell>
+							<TableCell>Titre</TableCell>
+							<TableCell>Status</TableCell>
+							<TableCell>Priority</TableCell>
+							<TableCell>Category</TableCell>
+							<TableCell>Created At</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{tickets.map((t) => (
+							<TableRow
+								key={t.id}
+								onClick={() => navigate(`/tickets/${t.id}/edit`)}
+								sx={{
+									cursor: "pointer",
+									"&:hover": { bgcolor: "action.hover" },
+								}}
+							>
+								<TableCell>{t.id}</TableCell>
+								<TableCell>{t.title}</TableCell>
+								<TableCell>{translateStatus(t.status)}</TableCell>
+								<TableCell>{translatePriority(t.priority)}</TableCell>
+								<TableCell>{t.category_name}</TableCell>
+								<TableCell>{formatDate(t.created_at)}</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
 			<TableContainer component={Paper}>
 				<Table>
 					<TableHead>
