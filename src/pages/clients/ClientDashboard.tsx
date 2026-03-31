@@ -40,6 +40,8 @@ export default function ClientDashboard() {
 	const { user } = useAuth();
 
 	useEffect(() => {
+		console.log(user);
+		console.log("userid:", user?.id);
 		fetchWithToken("http://localhost:3310/api/tickets/")
 			.then((response) => response.json())
 			.then((data) => {
@@ -50,7 +52,7 @@ export default function ClientDashboard() {
 			})
 
 			.catch((error) => console.error(error));
-	}, []);
+	}, [user]);
 
 	return (
 		<Container maxWidth="lg">
