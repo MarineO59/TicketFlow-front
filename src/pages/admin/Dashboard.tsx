@@ -4,7 +4,7 @@ export default function Dashboard() {
 	return (
 		<Box sx={{ p: 3 }}>
 			<Typography variant="h4" gutterBottom>
-				Gestion des utilisateurs
+				Bonjour X, voici votre dashboard Admin
 			</Typography>
 			<Box
 				sx={{
