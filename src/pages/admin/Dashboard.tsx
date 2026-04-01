@@ -1,57 +1,14 @@
-import {
-	Box,
-	Card,
-	Paper,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
-	TextField,
-	Typography,
-} from "@mui/material";
+import { Typography } from "@mui/material";
+import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchWithToken } from "../../utils/api";
-import {
-	formatDate,
-	translatePriority,
-	translateStatus,
-} from "../../utils/translations";
-import Profile from "./ProfileUser";
-import User from "./UserCard";
-
-interface UserType {
-	id: number;
-	firstname: string;
-	lastname: string;
-	email: string;
-	password: string;
-}
-interface TicketType {
-	id: number;
-	title: string;
-	status: string;
-	priority: string;
-	category_id: number;
-	category_name: string;
-	created_at: string;
-	resolved_at: string | null;
-}
-interface CategoryType {
-	id: number;
-	name: string;
-}
+import StatCard from "../technicien/StatCard";
+import type { TicketType } from "../technicien/TechnicienDashboard.utils";
+import TicketTable from "../technicien/TicketTable";
 
 export default function Dashboard() {
-	const [users, setUsers] = useState<UserType[]>([]);
-	const [currentUser, setCurrentUser] = useState<UserType | null>(null);
-	const [isUpdate, SetIsUpdate] = useState(false);
-	console.log(currentUser);
-	const [search, setSearch] = useState("");
 	const [tickets, setTickets] = useState<TicketType[]>([]);
-	const [categories, setCategories] = useState<CategoryType[]>([]);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -59,198 +16,60 @@ export default function Dashboard() {
 			.then((response) => response.json())
 			.then((data) => setTickets(data))
 			.catch((error) => console.error(error));
-
-		fetchWithToken("http://localhost:3310/api/categories/")
-			.then((response) => response.json())
-			.then((data) => setCategories(data))
-			.catch((error) => console.error(error));
 	}, []);
 
-	useEffect(() => {
-		fetchWithToken("http://localhost:3310/api/users/")
-			.then((response) => response.json())
-			.then((data) => setUsers(data))
-			.catch((error) => console.error(error));
-	}, [isUpdate]);
-	// Filtrer les utilisateurs en fonction de la recherche
-	const filteredUsers = users.filter(
-		(user) =>
-			user.firstname.toLowerCase().includes(search.toLowerCase()) ||
-			user.lastname.toLowerCase().includes(search.toLowerCase()) ||
-			user.email.toLowerCase().includes(search.toLowerCase()),
-	);
+	const stats = [
+		{
+			label: "Tickets en cours",
+			value: tickets.filter((t) => t.status === "in_progress").length,
+			color: "#3b82f6",
+		},
+		{
+			label: "En attente",
+			value: tickets.filter((t) => t.status === "open").length,
+			color: "#f59e0b",
+		},
+		{
+			label: "Résolus",
+			value: tickets.filter((t) => t.status === "resolved").length,
+			color: "#22c55e",
+		},
+		{
+			label: "Tickets en retard",
+			value: tickets.filter((t) => {
+				const days = (Date.now() - new Date(t.created_at).getTime()) / 86400000;
+				return days > 3 && t.status !== "resolved" && t.status !== "closed";
+			}).length,
+			color: "#ef4444",
+		},
+	];
 	return (
 		<Box sx={{ p: 3 }}>
 			<Typography variant="h4" gutterBottom>
-				Gestion des utilisateurs
+				DASHBOARD ADMIN
 			</Typography>
 			<Box
 				sx={{
 					display: "grid",
-					gridTemplateColumns: "1fr 1fr 1fr 1fr",
-					gap: "12px",
-					mb: 3,
+					gridTemplateColumns: "repeat(4, 1fr)",
+					gap: 2,
+					mb: 4,
 				}}
 			>
-				<Card sx={{ p: 2, bgcolor: "#00FFD1", color: "white" }}>
-					<Typography sx={{ fontSize: "11px", color: "text.secondary" }}>
-						Utilisateurs
-					</Typography>
-					<Typography sx={{ fontSize: "26px", fontWeight: 700 }}>
-						{users.length}
-					</Typography>
-					<Typography sx={{ fontSize: "11px", color: "text.disabled" }}>
-						+ 3 ce mois
-					</Typography>
-				</Card>
-				<Card sx={{ p: 2, bgcolor: "#FF6B6B", color: "white" }}>
-					<Typography sx={{ fontSize: "11px", color: "text.secondary" }}>
-						Ticket en cours
-					</Typography>
-					<Typography sx={{ fontSize: "26px", fontWeight: 700 }}>
-						{tickets.filter((t) => t.status === "in_progress").length}
-					</Typography>
-					<Typography sx={{ fontSize: "11px", color: "text.disabled" }}>
-						12 en attente
-					</Typography>
-				</Card>
-				<Card sx={{ p: 2, bgcolor: "#FFD93D", color: "white" }}>
-					<Typography sx={{ fontSize: "11px", color: "text.secondary" }}>
-						Catégories
-					</Typography>
-					<Typography sx={{ fontSize: "26px", fontWeight: 700 }}>
-						{categories.length}
-					</Typography>
-					<Typography sx={{ fontSize: "11px", color: "text.disabled" }}>
-						2 inactives
-					</Typography>
-				</Card>
-				<Card sx={{ p: 2, bgcolor: "#A78BFA", color: "white" }}>
-					<Typography sx={{ fontSize: "11px", color: "text.secondary" }}>
-						Tickets résolus
-					</Typography>
-					<Typography sx={{ fontSize: "26px", fontWeight: 700 }}>
-						{tickets.filter((t) => t.status === "resolved").length}
-					</Typography>
-					<Typography sx={{ fontSize: "11px", color: "text.disabled" }}>
-						Taux 87%
-					</Typography>
-				</Card>
+				{stats.map((stat) => (
+					<StatCard
+						key={stat.label}
+						label={stat.label}
+						value={stat.value}
+						color={stat.color}
+					/>
+				))}
 			</Box>
-			<TextField
-				label="Rechercher par prénom, nom ou email"
-				variant="outlined"
-				fullWidth
-				sx={{
-					mb: 3,
-					bgcolor: "white",
-					borderRadius: 2,
-					"& .MuiOutlinedInput-root": {
-						"& fieldset": {
-							borderColor: "#000000",
-							borderWidth: "1px",
-						},
-						"&:hover fieldset": {
-							borderColor: "#00FFD1",
-						},
-						"&.Mui-focused fieldset": {
-							borderColor: "#00FFD1",
-						},
-					},
-				}}
-				value={search}
-				onChange={(e) => setSearch(e.target.value)}
+			<TicketTable
+				tickets={tickets}
+				selectedTicketId={null}
+				onSelectTicket={(ticket) => navigate(`/tickets/${ticket.id}/edit`)}
 			/>
-			<TableContainer component={Paper} sx={{ width: "80%" }}>
-				<Table>
-					<TableHead>
-						<TableRow>
-							<TableCell>ID</TableCell>
-							<TableCell>Titre</TableCell>
-							<TableCell>Status</TableCell>
-							<TableCell>Priority</TableCell>
-							<TableCell>Category</TableCell>
-							<TableCell>Created At</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{tickets.map((t) => (
-							<TableRow
-								key={t.id}
-								onClick={() => navigate(`/tickets/${t.id}/edit`)}
-								sx={{
-									cursor: "pointer",
-									"&:hover": { bgcolor: "action.hover" },
-								}}
-							>
-								<TableCell>{t.id}</TableCell>
-								<TableCell>{t.title}</TableCell>
-								<TableCell>{translateStatus(t.status)}</TableCell>
-								<TableCell>{translatePriority(t.priority)}</TableCell>
-								<TableCell>{t.category_name}</TableCell>
-								<TableCell>{formatDate(t.created_at)}</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</TableContainer>
-			<TableContainer component={Paper}>
-				<Table>
-					<TableHead>
-						<TableRow sx={{ bgcolor: "#2f5071" }}>
-							<TableCell
-								sx={{
-									fontWeight: "bold",
-									color: "white",
-								}}
-							>
-								Prénom
-							</TableCell>
-							<TableCell
-								sx={{
-									fontWeight: "bold",
-									color: "white",
-								}}
-							>
-								Nom
-							</TableCell>
-							<TableCell
-								sx={{
-									fontWeight: "bold",
-									color: "white",
-								}}
-							>
-								Email
-							</TableCell>
-							<TableCell
-								sx={{
-									fontWeight: "bold",
-									color: "white",
-								}}
-							>
-								Modifier
-							</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{filteredUsers.length > 0 ? (
-							filteredUsers.map((user) => (
-								<User
-									key={user.id}
-									user={user}
-									setCurrentUser={setCurrentUser}
-									SetIsUpdate={SetIsUpdate}
-								/>
-							))
-						) : (
-							<TableRow>
-								<TableCell colSpan={4}>No Data</TableCell>
-							</TableRow>
-						)}
-					</TableBody>
-				</Table>
-			</TableContainer>
-			{currentUser && <Profile currentUser={currentUser} />}
 		</Box>
 	);
 }
