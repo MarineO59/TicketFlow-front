@@ -1,14 +1,14 @@
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import CategoryIcon from "@mui/icons-material/Category";
 import ChatIcon from "@mui/icons-material/Chat";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import HistoryIcon from "@mui/icons-material/History";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import GroupIcon from "@mui/icons-material/Group";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import EngineeringIcon from "@mui/icons-material/Engineering";
+import GroupIcon from "@mui/icons-material/Group";
+import HistoryIcon from "@mui/icons-material/History";
 import { Box, IconButton, Tooltip } from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface NavItem {
 	label: string;
@@ -91,9 +91,7 @@ export default function Sidebar({ role }: Props) {
 							sx={{
 								color: "white",
 								opacity: isActive ? 1 : 0.5,
-								bgcolor: isActive
-									? "rgba(255,255,255,0.15)"
-									: "transparent",
+								bgcolor: isActive ? "rgba(255,255,255,0.15)" : "transparent",
 								borderRadius: 2,
 								width: 44,
 								height: 44,
