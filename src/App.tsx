@@ -11,6 +11,7 @@ import Tickets from "./pages/admin/Tickets";
 import Users from "./pages/admin/Users";
 import ClientDashboard from "./pages/clients/ClientDashboard";
 import Login from "./pages/public/Login";
+import Register from "./pages/public/Register";
 import TechnicienDashboard from "./pages/technicien/TechnicienDashboard";
 
 function AppRoutes() {
@@ -20,6 +21,7 @@ function AppRoutes() {
 		return (
 			<Routes>
 				<Route path="/login" element={<Login />} />
+				<Route path="/register" element={<Register />} />
 				<Route path="*" element={<Navigate to="/login" />} />
 			</Routes>
 		);
