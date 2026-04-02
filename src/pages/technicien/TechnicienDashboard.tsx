@@ -112,6 +112,8 @@ export default function TechnicienDashboard() {
 						ticket={selectedTicket}
 						onClose={() => setSelectedTicket(null)}
 						onStatusChange={handleStatusChange}
+						technicians={[]} // Pas besoin de la liste des techniciens pour le technicien
+						onTechnicianChange={() => {}} // Pas besoin de changer de technicien pour le technicien
 					/>
 				)}
 			</Box>

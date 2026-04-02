@@ -14,6 +14,13 @@ export interface TicketType {
 	technician_id: number;
 }
 
+export interface UserType {
+	id: number;
+	firstname: string;
+	lastname: string;
+	role: string;
+}
+
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
 export const PRIORITY_COLORS: Record<string, string> = {

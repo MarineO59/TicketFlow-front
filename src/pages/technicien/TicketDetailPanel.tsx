@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { fetchWithToken } from "../../utils/api";
 import Comments from "../admin/Comments";
+import type { UserType } from "./TechnicienDashboard.utils";
 import {
 	PRIORITY_COLORS,
 	PRIORITY_LABELS,
@@ -22,12 +23,16 @@ interface Props {
 	ticket: TicketType;
 	onClose: () => void;
 	onStatusChange: (ticketId: number, newStatus: string) => void;
+	technicians: UserType[];
+	onTechnicianChange: (ticketId: number, technicianId: number) => void;
 }
 
 export default function TicketDetailPanel({
 	ticket,
 	onClose,
 	onStatusChange,
+	technicians,
+	onTechnicianChange,
 }: Props) {
 	const handleStatusChange = async (newStatus: string) => {
 		await fetchWithToken(`http://localhost:3310/api/tickets/${ticket.id}`, {
@@ -43,6 +48,21 @@ export default function TicketDetailPanel({
 			}),
 		});
 		onStatusChange(ticket.id, newStatus);
+	};
+	const handleTechnicianChange = async (newTechnicianId: number) => {
+		await fetchWithToken(`http://localhost:3310/api/tickets/${ticket.id}`, {
+			method: "PUT",
+			body: JSON.stringify({
+				title: ticket.title,
+				description: ticket.description,
+				status: ticket.status,
+				priority: ticket.priority,
+				client_id: ticket.client_id,
+				technician_id: newTechnicianId,
+				category_id: ticket.category_id,
+			}),
+		});
+		onTechnicianChange(ticket.id, newTechnicianId);
 	};
 
 	return (
@@ -131,6 +151,23 @@ export default function TicketDetailPanel({
 								size="small"
 								sx={{ fontSize: 11 }}
 							/>
+						</MenuItem>
+					))}
+				</TextField>
+				{/* ASSIGNER UN TECHNICIEN */}
+				<TextField
+					select
+					label="Technicien"
+					size="small"
+					fullWidth
+					sx={{ mt: 2 }}
+					value={ticket.technician_id ?? ""}
+					onChange={(e) => handleTechnicianChange(Number(e.target.value))}
+				>
+					<MenuItem value="">Non assigné</MenuItem>
+					{technicians.map((tech) => (
+						<MenuItem key={tech.id} value={tech.id}>
+							{tech.firstname} {tech.lastname}
 						</MenuItem>
 					))}
 				</TextField>

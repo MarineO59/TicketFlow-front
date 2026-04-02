@@ -12,16 +12,12 @@ import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import { fetchWithToken } from "../../utils/api";
 import StatCard from "../technicien/StatCard";
-import type { TicketType } from "../technicien/TechnicienDashboard.utils";
+import type {
+	TicketType,
+	UserType,
+} from "../technicien/TechnicienDashboard.utils";
 import TicketDetailPanel from "../technicien/TicketDetailPanel";
 import TicketTable from "../technicien/TicketTable";
-
-interface UserType {
-	id: number;
-	firstname: string;
-	lastname: string;
-	role: string;
-}
 
 export default function Dashboard() {
 	const [tickets, setTickets] = useState<TicketType[]>([]);
@@ -80,6 +76,19 @@ export default function Dashboard() {
 		}
 	};
 
+	const handleTechnicianChange = (ticketId: number, technicianId: number) => {
+		setTickets((prev) =>
+			prev.map((t) =>
+				t.id === ticketId ? { ...t, technician_id: technicianId } : t,
+			),
+		);
+		if (selectedTicket?.id === ticketId) {
+			setSelectedTicket((prev) =>
+				prev ? { ...prev, technician_id: technicianId } : prev,
+			);
+		}
+	};
+
 	return (
 		<Box sx={{ p: 3 }}>
 			<Typography variant="h4" gutterBottom>
@@ -117,6 +126,8 @@ export default function Dashboard() {
 						ticket={selectedTicket}
 						onClose={() => setSelectedTicket(null)}
 						onStatusChange={handleStatusChange}
+						technicians={technicians}
+						onTechnicianChange={handleTechnicianChange}
 					/>
 				)}
 			</Drawer>
