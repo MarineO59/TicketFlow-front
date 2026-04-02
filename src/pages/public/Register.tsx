@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "../../components/ui/Footer";
 import {
 	type FormErrors,
 	getPasswordStrength,
@@ -251,6 +252,7 @@ export default function Register() {
 					</Box>
 				</Paper>
 			</Box>
+			<Footer />
 		</Box>
 	);
 }

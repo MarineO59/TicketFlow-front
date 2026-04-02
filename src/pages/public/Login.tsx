@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "../../components/ui/Footer";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
@@ -241,6 +242,7 @@ export default function Login() {
 					</Typography>
 				</Paper>
 			</Box>
+			<Footer />
 		</Box>
 	);
 }
