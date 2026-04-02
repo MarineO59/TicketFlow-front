@@ -7,6 +7,7 @@ import About from "./pages/About";
 import Categories from "./pages/admin/Categories";
 import Dashboard from "./pages/admin/Dashboard";
 import TicketEdit from "./pages/admin/TicketEdit";
+import TicketForm from "./pages/admin/TicketForm";
 import Tickets from "./pages/admin/Tickets";
 import Users from "./pages/admin/Users";
 import ClientDashboard from "./pages/clients/ClientDashboard";
@@ -31,7 +32,7 @@ function AppRoutes() {
 		<Layout>
 			<Routes>
 				<Route path="/about" element={<About />} />
-				<Route path="/tickets/new" element={<TicketEdit />} />
+				<Route path="/tickets/new" element={<TicketForm />} />
 				<Route path="/tickets/:id/edit" element={<TicketEdit />} />
 				<Route path="/tickets" element={<Tickets />} />
 				<Route path="/users" element={<Users />} />
