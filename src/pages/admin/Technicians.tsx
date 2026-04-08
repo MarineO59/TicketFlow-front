@@ -47,7 +47,9 @@ export default function Technicians() {
 		fetchWithToken(`${import.meta.env.VITE_API_URL}/api/users/`)
 			.then((response) => response.json())
 			.then((data) =>
-				setTechnicians(data.filter((user: { role: string; }) => user.role === "technician")),
+				setTechnicians(
+					data.filter((user: { role: string }) => user.role === "technician"),
+				),
 			)
 			.catch((error) => console.error(error));
 	});
