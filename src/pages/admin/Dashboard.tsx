@@ -10,6 +10,19 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Cell,
+	Legend,
+	Pie,
+	PieChart,
+	ResponsiveContainer,
+	Tooltip,
+	XAxis,
+	YAxis,
+} from "recharts";
 import { fetchWithToken } from "../../utils/api";
 import StatCard from "../technicien/StatCard";
 import type {
@@ -27,7 +40,9 @@ export default function Dashboard() {
 	useEffect(() => {
 		fetchWithToken(`${import.meta.env.VITE_API_URL}/api/tickets/`)
 			.then((response) => response.json())
-			.then((data) => setTickets(data))
+			.then((data) => {
+				setTickets(data);
+			})
 			.catch((error) => console.error(error));
 	}, []);
 
@@ -64,6 +79,21 @@ export default function Dashboard() {
 		},
 	];
 	const technicians = users.filter((u) => u.role === "technician");
+
+	const ticketsByDay = Object.entries(
+		tickets.reduce(
+			(acc, ticket) => {
+				const day = new Date(ticket.created_at).toLocaleDateString("fr-FR", {
+					day: "2-digit",
+					month: "2-digit",
+					year: "2-digit",
+				});
+				acc[day] = (acc[day] || 0) + 1;
+				return acc;
+			},
+			{} as Record<string, number>,
+		),
+	).map(([day, count]) => ({ day, count }));
 
 	const handleStatusChange = (ticketId: number, newStatus: string) => {
 		setTickets((prev) =>
@@ -111,6 +141,118 @@ export default function Dashboard() {
 					/>
 				))}
 			</Box>
+			<Box
+				sx={{
+					display: "grid",
+					gridTemplateColumns: "1fr 1fr 2fr",
+					gap: 2,
+					mb: 4,
+				}}
+			>
+				<Box sx={{ bgcolor: "#ffffff", borderRadius: 2, p: 3 }}>
+					<Typography
+						variant="h6"
+						fontWeight={600}
+						gutterBottom
+						color="text.primary"
+					>
+						Répartition par statut
+					</Typography>
+					<ResponsiveContainer width="100%" height={220}>
+						<PieChart>
+							<Pie
+								data={stats}
+								dataKey="value"
+								nameKey="label"
+								cx="50%"
+								cy="50%"
+								outerRadius={80}
+							>
+								{stats.map((stat) => (
+									<Cell key={stat.label} fill={stat.color} />
+								))}
+							</Pie>
+							<Tooltip />
+							<Legend />
+						</PieChart>
+					</ResponsiveContainer>
+				</Box>
+
+				<Box sx={{ bgcolor: "#ffffff", borderRadius: 2, p: 3 }}>
+					<Typography
+						variant="h6"
+						fontWeight={600}
+						gutterBottom
+						color="text.primary"
+					>
+						Répartition par priorité
+					</Typography>
+					<ResponsiveContainer width="100%" height={220}>
+						<PieChart>
+							<Pie
+								data={[
+									{
+										label: "Haut",
+										value: tickets.filter((t) => t.priority === "high").length,
+										color: "#ef4444",
+									},
+									{
+										label: "Moyen",
+										value: tickets.filter((t) => t.priority === "medium")
+											.length,
+										color: "#f59e0b",
+									},
+									{
+										label: "Bas",
+										value: tickets.filter((t) => t.priority === "low").length,
+										color: "#22c55e",
+									},
+								]}
+								dataKey="value"
+								nameKey="label"
+								cx="50%"
+								cy="50%"
+								outerRadius={80}
+							>
+								{[
+									{ label: "Haut", color: "#ef4444" },
+									{ label: "Moyen", color: "#f59e0b" },
+									{ label: "Bas", color: "#22c55e" },
+								].map((entry) => (
+									<Cell key={entry.label} fill={entry.color} />
+								))}
+							</Pie>
+							<Tooltip />
+							<Legend />
+						</PieChart>
+					</ResponsiveContainer>
+				</Box>
+				<Box sx={{ bgcolor: "#ffffff", borderRadius: 2, p: 3 }}>
+					<Typography
+						variant="h6"
+						fontWeight={600}
+						gutterBottom
+						color="text.primary"
+					>
+						Tickets créés par jour
+					</Typography>
+					<ResponsiveContainer width="100%" height={250}>
+						<BarChart data={ticketsByDay}>
+							<CartesianGrid strokeDasharray="3 3" />
+							<XAxis dataKey="day" />
+							<YAxis allowDecimals={false} />
+							<Tooltip />
+							<Bar
+								dataKey="count"
+								name="Tickets"
+								fill="#3b82f6"
+								radius={[4, 4, 0, 0]}
+							/>
+						</BarChart>
+					</ResponsiveContainer>
+				</Box>
+			</Box>
+
 			<TicketTable
 				tickets={tickets}
 				selectedTicketId={selectedTicket?.id ?? null}
