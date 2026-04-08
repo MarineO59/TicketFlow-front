@@ -6,6 +6,7 @@ import { useAuth } from "./context/AuthContext";
 import About from "./pages/About";
 import Categories from "./pages/admin/Categories";
 import Dashboard from "./pages/admin/Dashboard";
+import Technicians from "./pages/admin/Technicians";
 import TicketEdit from "./pages/admin/TicketEdit";
 import TicketForm from "./pages/admin/TicketForm";
 import Tickets from "./pages/admin/Tickets";
@@ -14,7 +15,6 @@ import ClientDashboard from "./pages/clients/ClientDashboard";
 import Login from "./pages/public/Login";
 import Register from "./pages/public/Register";
 import TechnicienDashboard from "./pages/technicien/TechnicienDashboard";
-import Technicians from "./pages/admin/Technicians";
 
 function AppRoutes() {
 	const { user } = useAuth();
