@@ -1,5 +1,6 @@
 import {
     Box,
+    IconButton,
     Paper,
     Table,
     TableBody,
@@ -12,6 +13,8 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fetchWithToken } from "../../utils/api";
+import { Eye } from "lucide-react";
+
 
 interface UserType {
     id: number;
@@ -26,6 +29,7 @@ export default function Technicians() {
     const [technicians, setTechnicians] = useState<UserType[]>([]);
     const [isUpdate, SetIsUpdate] = useState(false);
     const [search, setSearch] = useState("");
+    const [selectedTechnician, setSelectedTechnician] = useState<UserType | null>(null);
 
     useEffect(() => {
         fetchWithToken(`${import.meta.env.VITE_API_URL}/api/users/`)
@@ -41,7 +45,7 @@ export default function Technicians() {
             user.firstname.toLowerCase().includes(search.toLowerCase()) ||
             user.lastname.toLowerCase().includes(search.toLowerCase()) ||
             user.email.toLowerCase().includes(search.toLowerCase()),
-    )
+    );
 
     return (
         <Box sx={{ p: 3 }}>
@@ -94,6 +98,11 @@ export default function Technicians() {
                                 <TableCell>{technician.lastname}</TableCell>
                                 <TableCell>{technician.email}</TableCell>
                                 <TableCell>{technician.role}</TableCell>
+                                <TableCell>
+                                    <IconButton onClick={() => setSelectedTechnician(technician)}>
+                                        <Eye size={18}/>
+                                    </IconButton>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
