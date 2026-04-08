@@ -37,7 +37,6 @@ interface TicketType {
 
 export default function Technicians() {
 	const [technicians, setTechnicians] = useState<UserType[]>([]);
-	const [isUpdate, SetIsUpdate] = useState(false);
 	const [search, setSearch] = useState("");
 	const [selectedTechnician, setSelectedTechnician] = useState<UserType | null>(
 		null,
@@ -48,10 +47,10 @@ export default function Technicians() {
 		fetchWithToken(`${import.meta.env.VITE_API_URL}/api/users/`)
 			.then((response) => response.json())
 			.then((data) =>
-				setTechnicians(data.filter((user) => user.role === "technician")),
+				setTechnicians(data.filter((user: { role: string; }) => user.role === "technician")),
 			)
 			.catch((error) => console.error(error));
-	}, [isUpdate]);
+	});
 
 	useEffect(() => {
 		if (!selectedTechnician) return;
