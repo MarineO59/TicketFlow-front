@@ -14,6 +14,7 @@ import ClientDashboard from "./pages/clients/ClientDashboard";
 import Login from "./pages/public/Login";
 import Register from "./pages/public/Register";
 import TechnicienDashboard from "./pages/technicien/TechnicienDashboard";
+import Technicians from "./pages/admin/Technicians";
 
 function AppRoutes() {
 	const { user } = useAuth();
@@ -36,6 +37,7 @@ function AppRoutes() {
 				<Route path="/tickets/:id/edit" element={<TicketEdit />} />
 				<Route path="/tickets" element={<Tickets />} />
 				<Route path="/users" element={<Users />} />
+				<Route path="/technicians" element={<Technicians />} />
 				<Route path="/categories" element={<Categories />} />
 				<Route path="/admin/dashboard" element={<Dashboard />} />
 				<Route path="/technician/dashboard" element={<TechnicienDashboard />} />
