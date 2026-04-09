@@ -16,40 +16,44 @@ export default function TicketForm() {
 	const [description, setDescription] = useState("");
 	const [priority, setPriority] = useState("");
 	const [category_id, setCategoryId] = useState("");
-	const [attachment, setAttachment] = useState<File | null>(null); //  TODO à brancher avec la route attachments du back, puis enlever le _ pour éviter les warnings de variable non utilisée
+	const [attachment, setAttachment] = useState<File | null>(null);
 	const navigate = useNavigate();
 	const { user } = useAuth();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		const res = await fetchWithToken(`${import.meta.env.VITE_API_URL}/api/tickets`, {
-			method: "POST",
-			body: JSON.stringify({
-				title,
-				description,
-				priority,
-				category_id,
-				status: "open",
-				client_id: user?.id,
-				technician_id: null,
-			}),
-		});
-		const ticket = await res.json()
-		console.log(attachment)
-		if(attachment){
+		const res = await fetchWithToken(
+			`${import.meta.env.VITE_API_URL}/api/tickets`,
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					title,
+					description,
+					priority,
+					category_id,
+					status: "open",
+					client_id: user?.id,
+					technician_id: null,
+				}),
+			},
+		);
+		const ticket = await res.json();
+		console.log(attachment);
+		if (attachment) {
 			const formData = new FormData();
-			formData.append("file", attachment)
+			formData.append("file", attachment);
 			await fetchWithToken(
 				`${import.meta.env.VITE_API_URL}/api/attachments/tickets/${ticket.id}/attachments`,
 				{
 					method: "POST",
-					body: formData
-				}
-			)
+					body: formData,
+				},
+			);
 		}
 		window.alert("Ticket créé et envoyé à nos équipes");
-		
+
 		navigate("/client/dashboard");
 	};
 
