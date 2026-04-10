@@ -1,14 +1,8 @@
 import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {
-	Badge,
-	Box,
-	IconButton,
-	InputAdornment,
-	TextField,
-} from "@mui/material";
+import { Box, IconButton, InputAdornment, TextField } from "@mui/material";
+import NotificationPanel from "./NotificationPanel";
 import ProfileMenu from "./ProfileMenu";
 
 export default function Navbar() {
@@ -48,11 +42,7 @@ export default function Navbar() {
 			/>
 
 			<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-				<IconButton sx={{ color: "white", opacity: 0.7 }}>
-					<Badge badgeContent={3} color="error">
-						<NotificationsIcon />
-					</Badge>
-				</IconButton>
+				<NotificationPanel />
 				<IconButton sx={{ color: "white", opacity: 0.7 }}>
 					<MailIcon />
 				</IconButton>

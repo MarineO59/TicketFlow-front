@@ -7,6 +7,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { fetchWithToken } from "../../utils/api";
 
@@ -26,7 +27,7 @@ export default function ProfilePage() {
 	const [email, setEmail] = useState("");
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState("");
-
+	const navigate = useNavigate();
 	useEffect(() => {
 		if (!user?.id) return;
 		fetchWithToken(`http://localhost:3310/api/users/${user.id}`)
@@ -55,6 +56,7 @@ export default function ProfilePage() {
 
 		if (response.ok) {
 			setSuccess(true);
+			setTimeout(() => navigate(-1), 1500);
 		} else {
 			setError("Erreur lors de la mise à jour");
 		}
