@@ -16,7 +16,7 @@ export default function TicketForm() {
 	const [description, setDescription] = useState("");
 	const [priority, setPriority] = useState("");
 	const [category_id, setCategoryId] = useState("");
-	const [attachment, setAttachment] = useState<File | null>(null); 
+	const [attachment, setAttachment] = useState<File | null>(null);
 	const navigate = useNavigate();
 	const { user } = useAuth();
 
