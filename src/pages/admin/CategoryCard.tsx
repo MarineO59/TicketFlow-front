@@ -49,7 +49,7 @@ const Category = ({ category, SetIsUpdate }: Props) => {
 	return (
 		<TableRow sx={{ "&:hover": { bgcolor: "#f5f5f5" } }}>
 			{isEdit ? (
-				<TableCell>
+				<TableCell sx={{ borderRight: "1px solid #c0c0c0" }}>
 					<TextField
 						size="small"
 						variant="outlined"
@@ -60,11 +60,13 @@ const Category = ({ category, SetIsUpdate }: Props) => {
 					/>
 				</TableCell>
 			) : (
-				<TableCell>{category.name}</TableCell>
+				<TableCell sx={{ borderRight: "1px solid #c0c0c0" }}>
+					{category.name}
+				</TableCell>
 			)}
-			<TableCell>
+			<TableCell sx={{ textAlign: "center" }}>
 				{isEdit ? (
-					<Stack direction="row" spacing={2}>
+					<Stack direction="row" spacing={2} justifyContent="center">
 						<Button variant="contained" onClick={handleSave}>
 							Enregistrer
 						</Button>
@@ -77,11 +79,20 @@ const Category = ({ category, SetIsUpdate }: Props) => {
 						</Button>
 					</Stack>
 				) : (
-					<Stack direction="row" spacing={2}>
-						<Button variant="contained" onClick={handleEdit}>
+					<Stack direction="row" spacing={2} justifyContent="center">
+						<Button
+							variant="contained"
+							onClick={handleEdit}
+							sx={{ textTransform: "none" }}
+						>
 							Editer
 						</Button>
-						<Button variant="outlined" color="error" onClick={handleDelete}>
+						<Button
+							variant="outlined"
+							color="error"
+							onClick={handleDelete}
+							sx={{ textTransform: "none" }}
+						>
 							Supprimer
 						</Button>
 					</Stack>
