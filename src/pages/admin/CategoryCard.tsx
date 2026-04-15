@@ -1,5 +1,6 @@
 import { Button, Stack, TableCell, TableRow, TextField } from "@mui/material";
 import { useState } from "react";
+import { fetchWithToken } from "../../utils/api";
 
 interface CategoryType {
 	id: number;
@@ -16,7 +17,7 @@ const Category = ({ category, SetIsUpdate }: Props) => {
 		setIsEdit(true);
 	};
 	const handleDelete = async () => {
-		const response = await fetch(
+		const response = await fetchWithToken(
 			`${import.meta.env.VITE_API_URL}/api/categories/${category.id}`,
 			{
 				method: "DELETE",
@@ -31,7 +32,7 @@ const Category = ({ category, SetIsUpdate }: Props) => {
 	};
 	const handleSave = async () => {
 		const newData = { id: category.id, name: name || category.name };
-		const response = await fetch(
+		const response = await fetchWithToken(
 			`${import.meta.env.VITE_API_URL}/api/categories/${category.id}`,
 			{
 				method: "PUT",
@@ -46,9 +47,9 @@ const Category = ({ category, SetIsUpdate }: Props) => {
 		}
 	};
 	return (
-		<TableRow>
+		<TableRow sx={{ "&:hover": { bgcolor: "#f5f5f5" } }}>
 			{isEdit ? (
-				<TableCell>
+				<TableCell sx={{ borderRight: "1px solid #c0c0c0" }}>
 					<TextField
 						size="small"
 						variant="outlined"
@@ -59,29 +60,40 @@ const Category = ({ category, SetIsUpdate }: Props) => {
 					/>
 				</TableCell>
 			) : (
-				<TableCell>{category.name}</TableCell>
+				<TableCell sx={{ borderRight: "1px solid #c0c0c0" }}>
+					{category.name}
+				</TableCell>
 			)}
-			<TableCell>
+			<TableCell sx={{ textAlign: "center" }}>
 				{isEdit ? (
-					<Stack direction="row" spacing={2}>
+					<Stack direction="row" spacing={2} justifyContent="center">
 						<Button variant="contained" onClick={handleSave}>
-							Save
+							Enregistrer
 						</Button>
 						<Button
 							variant="outlined"
 							color="error"
 							onClick={() => setIsEdit(false)}
 						>
-							Cancel
+							Annuler
 						</Button>
 					</Stack>
 				) : (
-					<Stack direction="row" spacing={2}>
-						<Button variant="contained" onClick={handleEdit}>
-							Edit
+					<Stack direction="row" spacing={2} justifyContent="center">
+						<Button
+							variant="contained"
+							onClick={handleEdit}
+							sx={{ textTransform: "none" }}
+						>
+							Editer
 						</Button>
-						<Button variant="outlined" color="error" onClick={handleDelete}>
-							Delete
+						<Button
+							variant="outlined"
+							color="error"
+							onClick={handleDelete}
+							sx={{ textTransform: "none" }}
+						>
+							Supprimer
 						</Button>
 					</Stack>
 				)}
