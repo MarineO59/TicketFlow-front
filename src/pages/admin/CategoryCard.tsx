@@ -78,10 +78,10 @@ const Category = ({ category, SetIsUpdate }: Props) => {
 				) : (
 					<Stack direction="row" spacing={2}>
 						<Button variant="contained" onClick={handleEdit}>
-							Edit
+							Editer
 						</Button>
 						<Button variant="outlined" color="error" onClick={handleDelete}>
-							Delete
+							Supprimer
 						</Button>
 					</Stack>
 				)}
