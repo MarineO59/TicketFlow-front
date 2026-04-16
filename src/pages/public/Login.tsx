@@ -112,17 +112,15 @@ export default function Login() {
 							sx={{
 								mb: 2,
 								"& .MuiOutlinedInput-root": {
-									bgcolor: "rgba(255,255,255,0.1)",
+									bgcolor: "rgba(255,255,255,0.08)",
 									color: "white",
-									"& fieldset": {
-										borderColor: "rgba(255,255,255,0.3)",
+									"& input": {
+										color: "white",
+										colorScheme: "dark",
 									},
-									"&:hover fieldset": {
-										borderColor: "rgba(255,255,255,0.6)",
-									},
-									"&.Mui-focused fieldset": {
-										borderColor: "white",
-									},
+									"& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+									"&:hover fieldset": { borderColor: "rgba(255,255,255,0.6)" },
+									"&.Mui-focused fieldset": { borderColor: "white" },
 								},
 								"& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
 								"& .MuiInputLabel-root.Mui-focused": { color: "white" },
@@ -147,17 +145,15 @@ export default function Login() {
 							sx={{
 								mb: 3,
 								"& .MuiOutlinedInput-root": {
-									bgcolor: "rgba(255,255,255,0.1)",
+									bgcolor: "rgba(255,255,255,0.08)",
 									color: "white",
-									"& fieldset": {
-										borderColor: "rgba(255,255,255,0.3)",
+									"& input": {
+										color: "white",
+										colorScheme: "dark",
 									},
-									"&:hover fieldset": {
-										borderColor: "rgba(255,255,255,0.6)",
-									},
-									"&.Mui-focused fieldset": {
-										borderColor: "white",
-									},
+									"& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+									"&:hover fieldset": { borderColor: "rgba(255,255,255,0.6)" },
+									"&.Mui-focused fieldset": { borderColor: "white" },
 								},
 								"& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
 								"& .MuiInputLabel-root.Mui-focused": { color: "white" },
