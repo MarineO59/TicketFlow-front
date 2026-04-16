@@ -61,7 +61,17 @@ export default function Login() {
 			}}
 		>
 			{/* Logo */}
-			<Typography variant="h4" fontWeight={800} color="white" letterSpacing={1}>
+			<Typography
+				variant="h3"
+				fontWeight={800}
+				letterSpacing={3}
+				sx={{
+					background: "linear-gradient(90deg, #ffffff 0%, #00e5ff 100%)",
+					WebkitBackgroundClip: "text",
+					WebkitTextFillColor: "transparent",
+					filter: "drop-shadow(0 0 16px rgba(0, 229, 255, 0.7))",
+				}}
+			>
 				TICKETFLOW
 			</Typography>
 
@@ -77,7 +87,7 @@ export default function Login() {
 				<Paper
 					elevation={0}
 					sx={{
-						p: 4,
+						p: 5,
 						width: "100%",
 						maxWidth: 420,
 						borderRadius: 3,
@@ -92,7 +102,7 @@ export default function Login() {
 						fontWeight={700}
 						textAlign="center"
 						color="white"
-						mb={4}
+						mb={5}
 					>
 						Login
 					</Typography>
@@ -112,20 +122,24 @@ export default function Login() {
 							sx={{
 								mb: 2,
 								"& .MuiOutlinedInput-root": {
-									bgcolor: "rgba(255,255,255,0.1)",
+									bgcolor: "rgba(255,255,255,0.08)",
 									color: "white",
-									"& fieldset": {
-										borderColor: "rgba(255,255,255,0.3)",
+									"& input": {
+										color: "white",
+										colorScheme: "dark",
 									},
-									"&:hover fieldset": {
-										borderColor: "rgba(255,255,255,0.6)",
-									},
-									"&.Mui-focused fieldset": {
-										borderColor: "white",
-									},
+									"& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+									"&:hover fieldset": { borderColor: "rgba(255,255,255,0.6)" },
+									"&.Mui-focused fieldset": { borderColor: "white" },
 								},
 								"& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
 								"& .MuiInputLabel-root.Mui-focused": { color: "white" },
+								"& .MuiInputLabel-shrink": {
+									backgroundColor: "primary.main",
+									paddingLeft: "4px",
+									paddingRight: "4px",
+									borderRadius: "2px",
+								},
 							}}
 							value={email}
 							onChange={(event) => setEmail(event.target.value)}
@@ -141,20 +155,24 @@ export default function Login() {
 							sx={{
 								mb: 3,
 								"& .MuiOutlinedInput-root": {
-									bgcolor: "rgba(255,255,255,0.1)",
+									bgcolor: "rgba(255,255,255,0.08)",
 									color: "white",
-									"& fieldset": {
-										borderColor: "rgba(255,255,255,0.3)",
+									"& input": {
+										color: "white",
+										colorScheme: "dark",
 									},
-									"&:hover fieldset": {
-										borderColor: "rgba(255,255,255,0.6)",
-									},
-									"&.Mui-focused fieldset": {
-										borderColor: "white",
-									},
+									"& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+									"&:hover fieldset": { borderColor: "rgba(255,255,255,0.6)" },
+									"&.Mui-focused fieldset": { borderColor: "white" },
 								},
 								"& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
 								"& .MuiInputLabel-root.Mui-focused": { color: "white" },
+								"& .MuiInputLabel-shrink": {
+									backgroundColor: "primary.main",
+									paddingLeft: "4px",
+									paddingRight: "4px",
+									borderRadius: "2px",
+								},
 							}}
 							InputProps={{
 								endAdornment: (
