@@ -87,7 +87,7 @@ export default function Login() {
 				<Paper
 					elevation={0}
 					sx={{
-						p: 4,
+						p: 5,
 						width: "100%",
 						maxWidth: 420,
 						borderRadius: 3,
@@ -102,7 +102,7 @@ export default function Login() {
 						fontWeight={700}
 						textAlign="center"
 						color="white"
-						mb={4}
+						mb={5}
 					>
 						Login
 					</Typography>
