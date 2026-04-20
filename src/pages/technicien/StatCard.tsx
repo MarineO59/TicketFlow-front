@@ -5,7 +5,7 @@ interface Props {
 	label: string;
 	value: number;
 	color: string;
-	icon: React.ElementType;
+	icon?: React.ElementType;
 	onClick?: () => void;
 	active?: boolean;
 }
@@ -48,9 +48,11 @@ export default function StatCard({
 						{value}
 					</Typography>
 				</Box>
-				<Icon
-					sx={{ color, opacity: active ? 0.8 : 0.4, fontSize: 36, mt: 0.5 }}
-				/>
+				{Icon && (
+					<Icon
+						sx={{ color, opacity: active ? 0.8 : 0.4, fontSize: 36, mt: 0.5 }}
+					/>
+				)}
 			</Box>
 		</Paper>
 	);
