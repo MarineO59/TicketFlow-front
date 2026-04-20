@@ -6,28 +6,29 @@ interface Props {
 	value: number;
 	color: string;
 	icon: React.ElementType;
+	onClick?: () => void;
+	active?: boolean;
 }
 
-export default function StatCard({ label, value, color, icon: Icon }: Props) {
+export default function StatCard({ label, value, color, icon: Icon, onClick, active }: Props) {
 	return (
 		<Paper
-			elevation={0}
+			elevation={active ? 4 : 0}
+			onClick={onClick}
 			sx={{
 				p: 2.5,
 				borderRadius: 2,
 				border: "1px solid",
-				borderColor: "divider",
+				borderColor: active ? color : "divider",
 				borderLeft: `4px solid ${color}`,
-			}}
-		>
-			<Box
-				sx={{
-					display: "flex",
-					justifyContent: "space-between",
-					alignItems: "flex-start",
+				cursor: onClick ? "pointer" : "default",
+				transition: "all 0.2s",
+					"&:hover": onClick ? { boxShadow: 3} : {},
 				}}
-			>
-				<Box>
+			
+		>
+			<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+			<Box>
 					<Typography variant="body2" color="text.secondary" mb={0.5}>
 						{label}
 					</Typography>
@@ -35,8 +36,9 @@ export default function StatCard({ label, value, color, icon: Icon }: Props) {
 						{value}
 					</Typography>
 				</Box>
-				<Icon sx={{ color, opacity: 0.4, fontSize: 36, mt: 0.5 }} />
+				<Icon sx={{ color, opacity: active ? 0.8 : 0.4, fontSize: 36, mt: 0.5 }} />
 			</Box>
 		</Paper>
 	);
 }
+	

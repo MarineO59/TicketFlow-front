@@ -40,6 +40,7 @@ export default function Dashboard() {
 	const [tickets, setTickets] = useState<TicketType[]>([]);
 	const [users, setUsers] = useState<UserType[]>([]);
 	const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
+	const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
 	useEffect(() => {
 		fetchWithToken(`${import.meta.env.VITE_API_URL}/api/tickets/`)
@@ -63,18 +64,21 @@ export default function Dashboard() {
 			value: tickets.filter((t) => t.status === "in_progress").length,
 			color: "#3b82f6",
 			icon: ConfirmationNumberIcon,
+			statusFilter: "in_progress",
 		},
 		{
 			label: "En attente",
 			value: tickets.filter((t) => t.status === "open").length,
 			color: "#f59e0b",
 			icon: HourglassEmptyIcon,
+			statusFilter: "open",
 		},
 		{
 			label: "Résolus",
 			value: tickets.filter((t) => t.status === "resolved").length,
 			color: "#22c55e",
 			icon: CheckCircleIcon,
+			statusFilter: "resolved",
 		},
 		{
 			label: "Tickets en retard",
@@ -84,6 +88,7 @@ export default function Dashboard() {
 			}).length,
 			color: "#ef4444",
 			icon: WarningIcon,
+			statusFilter: "late",
 		},
 	];
 	const technicians = users.filter((u) => u.role === "technician");
@@ -126,6 +131,16 @@ export default function Dashboard() {
 			);
 		}
 	};
+	const filteredTickets = activeFilter
+		? activeFilter === "late"
+			? tickets.filter((t) => {
+					const days = (Date.now() - new Date(t.created_at).getTime()) / 86400000;
+					return (
+						days > 3 && t.status !== "resolved" && t.status !== "closed"
+					);
+			  })
+			: tickets.filter((t) => t.status === activeFilter)
+		: tickets;
 
 	return (
 		<Box sx={{ p: { xs: 2, sm: 3 } }}>
@@ -147,6 +162,12 @@ export default function Dashboard() {
 						value={stat.value}
 						color={stat.color}
 						icon={stat.icon}
+						active={activeFilter === stat.statusFilter}
+						onClick={() =>
+							setActiveFilter(
+								activeFilter === stat.statusFilter ? null : stat.statusFilter,
+							)
+						}
 					/>
 				))}
 			</Box>
@@ -301,7 +322,7 @@ export default function Dashboard() {
 				}}
 			>
 				<TicketTable
-					tickets={tickets}
+					tickets={filteredTickets}
 					selectedTicketId={selectedTicket?.id ?? null}
 					onSelectTicket={setSelectedTicket}
 				/>
