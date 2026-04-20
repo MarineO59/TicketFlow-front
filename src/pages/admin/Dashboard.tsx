@@ -141,6 +141,38 @@ export default function Dashboard() {
 			: tickets.filter((t) => t.status === activeFilter)
 		: tickets;
 
+	const CustomTooltip = ({
+		active,
+		payload,
+		label,
+	}: {
+		active?: boolean;
+		payload?: { value: number }[];
+		label?: string;
+	}) => {
+		if (active && payload && payload.length) {
+			return (
+				<Box
+					sx={{
+						bgcolor: "white",
+						border: "1px solid #ccc",
+						borderRadius: 2,
+						p: 1.5,
+						boxShadow: 2,
+					}}
+				>
+					<Typography variant="caption" color="text.secondary">
+						{`Date: ${label}`}
+					</Typography>
+					<Typography variant="body2" fontWeight={600} color="primary">
+						{payload[0].value} ticket{payload[0].value > 1 ? "s" : ""}
+					</Typography>
+				</Box>
+			);
+		}
+		return null;
+	};
+
 	return (
 		<Box sx={{ p: { xs: 2, sm: 3 } }}>
 			<Typography variant="h4" gutterBottom>
@@ -295,7 +327,7 @@ export default function Dashboard() {
 							<CartesianGrid strokeDasharray="3 3" />
 							<XAxis dataKey="day" />
 							<YAxis allowDecimals={false} />
-							<Tooltip />
+							<Tooltip content={<CustomTooltip />} />
 							<Bar
 								dataKey="count"
 								name="Tickets"
