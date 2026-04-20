@@ -1,3 +1,7 @@
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import WarningIcon from "@mui/icons-material/Warning";
 import {
 	Drawer,
 	Table,
@@ -36,6 +40,7 @@ export default function Dashboard() {
 	const [tickets, setTickets] = useState<TicketType[]>([]);
 	const [users, setUsers] = useState<UserType[]>([]);
 	const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
+	const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
 	useEffect(() => {
 		fetchWithToken(`${import.meta.env.VITE_API_URL}/api/tickets/`)
@@ -58,16 +63,22 @@ export default function Dashboard() {
 			label: "Tickets en cours",
 			value: tickets.filter((t) => t.status === "in_progress").length,
 			color: "#3b82f6",
+			icon: ConfirmationNumberIcon,
+			statusFilter: "in_progress",
 		},
 		{
 			label: "En attente",
 			value: tickets.filter((t) => t.status === "open").length,
 			color: "#f59e0b",
+			icon: HourglassEmptyIcon,
+			statusFilter: "open",
 		},
 		{
 			label: "Résolus",
 			value: tickets.filter((t) => t.status === "resolved").length,
 			color: "#22c55e",
+			icon: CheckCircleIcon,
+			statusFilter: "resolved",
 		},
 		{
 			label: "Tickets en retard",
@@ -76,6 +87,8 @@ export default function Dashboard() {
 				return days > 3 && t.status !== "resolved" && t.status !== "closed";
 			}).length,
 			color: "#ef4444",
+			icon: WarningIcon,
+			statusFilter: "late",
 		},
 	];
 	const technicians = users.filter((u) => u.role === "technician");
@@ -118,6 +131,47 @@ export default function Dashboard() {
 			);
 		}
 	};
+	const filteredTickets = activeFilter
+		? activeFilter === "late"
+			? tickets.filter((t) => {
+					const days =
+						(Date.now() - new Date(t.created_at).getTime()) / 86400000;
+					return days > 3 && t.status !== "resolved" && t.status !== "closed";
+				})
+			: tickets.filter((t) => t.status === activeFilter)
+		: tickets;
+
+	const CustomTooltip = ({
+		active,
+		payload,
+		label,
+	}: {
+		active?: boolean;
+		payload?: { value: number }[];
+		label?: string;
+	}) => {
+		if (active && payload && payload.length) {
+			return (
+				<Box
+					sx={{
+						bgcolor: "white",
+						border: "1px solid #ccc",
+						borderRadius: 2,
+						p: 1.5,
+						boxShadow: 2,
+					}}
+				>
+					<Typography variant="caption" color="text.secondary">
+						{`Date: ${label}`}
+					</Typography>
+					<Typography variant="body2" fontWeight={600} color="primary">
+						{payload[0].value} ticket{payload[0].value > 1 ? "s" : ""}
+					</Typography>
+				</Box>
+			);
+		}
+		return null;
+	};
 
 	return (
 		<Box sx={{ p: { xs: 2, sm: 3 } }}>
@@ -138,6 +192,13 @@ export default function Dashboard() {
 						label={stat.label}
 						value={stat.value}
 						color={stat.color}
+						icon={stat.icon}
+						active={activeFilter === stat.statusFilter}
+						onClick={() =>
+							setActiveFilter(
+								activeFilter === stat.statusFilter ? null : stat.statusFilter,
+							)
+						}
 					/>
 				))}
 			</Box>
@@ -176,6 +237,15 @@ export default function Dashboard() {
 							<Legend />
 						</PieChart>
 					</ResponsiveContainer>
+					<Typography
+						variant="caption"
+						color="text.secondary"
+						display="block"
+						textAlign="center"
+						mt={1}
+					>
+						{stats.reduce((acc, s) => acc + s.value, 0)} tickets
+					</Typography>
 				</Box>
 
 				<Box sx={{ bgcolor: "#ffffff", borderRadius: 2, p: 3, minWidth: 0 }}>
@@ -191,6 +261,12 @@ export default function Dashboard() {
 						<PieChart>
 							<Pie
 								data={[
+									{
+										label: "Critique",
+										value: tickets.filter((t) => t.priority === "critical")
+											.length,
+										color: "#dc2626",
+									},
 									{
 										label: "Haut",
 										value: tickets.filter((t) => t.priority === "high").length,
@@ -215,6 +291,7 @@ export default function Dashboard() {
 								outerRadius={70}
 							>
 								{[
+									{ label: "Critique", color: "#dc2626" },
 									{ label: "Haut", color: "#ef4444" },
 									{ label: "Moyen", color: "#f59e0b" },
 									{ label: "Bas", color: "#22c55e" },
@@ -226,6 +303,15 @@ export default function Dashboard() {
 							<Legend />
 						</PieChart>
 					</ResponsiveContainer>
+					<Typography
+						variant="caption"
+						color="text.secondary"
+						display="block"
+						textAlign="center"
+						mt={1}
+					>
+						{tickets.length} tickets
+					</Typography>
 				</Box>
 				<Box sx={{ bgcolor: "#ffffff", borderRadius: 2, p: 3, minWidth: 0 }}>
 					<Typography
@@ -241,7 +327,7 @@ export default function Dashboard() {
 							<CartesianGrid strokeDasharray="3 3" />
 							<XAxis dataKey="day" />
 							<YAxis allowDecimals={false} />
-							<Tooltip />
+							<Tooltip content={<CustomTooltip />} />
 							<Bar
 								dataKey="count"
 								name="Tickets"
@@ -267,7 +353,7 @@ export default function Dashboard() {
 				}}
 			>
 				<TicketTable
-					tickets={tickets}
+					tickets={filteredTickets}
 					selectedTicketId={selectedTicket?.id ?? null}
 					onSelectTicket={setSelectedTicket}
 				/>
@@ -340,6 +426,15 @@ export default function Dashboard() {
 								</TableCell>
 							</TableRow>
 						))}
+						{technicians.length === 0 && (
+							<TableRow>
+								<TableCell colSpan={3} align="center">
+									<Typography variant="body2" color="text.secondary">
+										Aucun technicien trouvé
+									</Typography>
+								</TableCell>
+							</TableRow>
+						)}
 					</TableBody>
 				</Table>
 			</TableContainer>
