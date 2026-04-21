@@ -23,6 +23,7 @@ export default function TicketForm() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
+		// Étape 1 : créer le ticket
 		const res = await fetchWithToken(
 			`${import.meta.env.VITE_API_URL}/api/tickets`,
 			{
@@ -39,21 +40,36 @@ export default function TicketForm() {
 				}),
 			},
 		);
+
+		if (!res.ok) {
+			window.alert("Erreur lors de la création du ticket");
+			return;
+		}
+
 		const ticket = await res.json();
-		console.log(attachment);
-		if (attachment) {
+
+		// Étape 2 : uploader le fichier si présent
+		if (attachment && ticket.id) {
 			const formData = new FormData();
 			formData.append("file", attachment);
-			await fetchWithToken(
+
+			const uploadRes = await fetchWithToken(
 				`${import.meta.env.VITE_API_URL}/api/attachments/tickets/${ticket.id}/attachments`,
 				{
 					method: "POST",
 					body: formData,
 				},
 			);
-		}
-		window.alert("Ticket créé et envoyé à nos équipes");
 
+			if (!uploadRes.ok) {
+				// Ticket créé mais upload échoué — on prévient sans bloquer
+				window.alert("Ticket créé mais l'upload du fichier a échoué");
+				navigate("/client/dashboard");
+				return;
+			}
+		}
+
+		window.alert("Ticket créé et envoyé à nos équipes");
 		navigate("/client/dashboard");
 	};
 
