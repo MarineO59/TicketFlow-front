@@ -87,6 +87,11 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 			setEmail("");
 		}
 	};
+	const ROLE_LABELS: Record<string, string> = {
+		admin: "Administrateur",
+		technician: "Technicien",
+		client: "Client",
+	};
 
 	return (
 		<TableRow hover sx={{ "&:hover": { bgcolor: "action.hover" } }}>
@@ -138,7 +143,7 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 			<TableCell>
 				{isEdit ? (
 					user.role === "client" ? (
-						user.role
+						(ROLE_LABELS[user.role] ?? user.role)
 					) : (
 						<TextField
 							select
@@ -154,7 +159,7 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 						</TextField>
 					)
 				) : (
-					user.role
+					(ROLE_LABELS[user.role] ?? user.role)
 				)}
 			</TableCell>
 
