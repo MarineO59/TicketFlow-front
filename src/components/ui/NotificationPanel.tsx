@@ -8,6 +8,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { io, type Socket } from "socket.io-client";
 import { useAuth } from "../../context/AuthContext";
 import { STATUS_LABELS } from "../../pages/technicien/TechnicienDashboard.utils";
@@ -36,6 +37,7 @@ type Notification = StatusNotification | NewTicketNotification;
 
 export default function NotificationPanel() {
 	const { user } = useAuth();
+	const navigate = useNavigate();
 	const [notifications, setNotifications] = useState<Notification[]>([]);
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const socketRef = useRef<Socket | null>(null);
@@ -97,6 +99,11 @@ export default function NotificationPanel() {
 		};
 	}, [user]);
 
+	const handleNotifClick = (ticketId: number) => {
+		handleClose();
+		navigate(`/tickets/${ticketId}/edit`);
+	};
+
 	const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
@@ -109,7 +116,11 @@ export default function NotificationPanel() {
 	const renderNotif = (notif: Notification) => {
 		if (notif.type === "new_ticket") {
 			return (
-				<Box key={notif.id}>
+				<Box
+					key={notif.id}
+					onClick={() => handleNotifClick(notif.ticketId)}
+					sx={{ cursor: "pointer", "&:hover": { bgcolor: "action.hover" } }}
+				>
 					<Box sx={{ px: 2, py: 1.5 }}>
 						<Typography variant="body2" fontWeight={500}>
 							🎫 Nouveau ticket #{notif.ticketId}
@@ -126,7 +137,11 @@ export default function NotificationPanel() {
 			);
 		}
 		return (
-			<Box key={notif.id}>
+			<Box
+				key={notif.id}
+				onClick={() => handleNotifClick(notif.ticketId)}
+				sx={{ cursor: "pointer", "&:hover": { bgcolor: "action.hover" } }}
+			>
 				<Box sx={{ px: 2, py: 1.5 }}>
 					<Typography variant="body2" fontWeight={500}>
 						Ticket #{notif.ticketId} — {notif.ticketTitle}
