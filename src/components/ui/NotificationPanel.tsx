@@ -8,17 +8,14 @@ import {
 	Typography,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import { io, type Socket } from "socket.io-client";
 import { useAuth } from "../../context/AuthContext";
 import { STATUS_LABELS } from "../../pages/technicien/TechnicienDashboard.utils";
-import { fetchWithToken } from "../../utils/api";
 
-interface TicketSnapshot {
-	id: number;
-	status: string;
-	title: string;
-}
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3310";
 
-interface Notification {
+interface StatusNotification {
+	type: "status_change";
 	id: number;
 	ticketId: number;
 	ticketTitle: string;
@@ -27,92 +24,124 @@ interface Notification {
 	seenAt: string;
 }
 
-const POLLING_INTERVAL = 30000;
+interface NewTicketNotification {
+	type: "new_ticket";
+	id: number;
+	ticketId: number;
+	ticketTitle: string;
+	seenAt: string;
+}
+
+type Notification = StatusNotification | NewTicketNotification;
 
 export default function NotificationPanel() {
 	const { user } = useAuth();
 	const [notifications, setNotifications] = useState<Notification[]>([]);
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const previousTickets = useRef<TicketSnapshot[]>([]);
+	const socketRef = useRef<Socket | null>(null);
 	const open = Boolean(anchorEl);
-
-	const getApiUrl = () => {
-		if (!user) return null;
-		if (user.role === "technician") {
-			return `http://localhost:3310/api/tickets/technician/${user.id}`;
-		}
-		if (user.role === "client") {
-			return `http://localhost:3310/api/tickets/`;
-		}
-		return `http://localhost:3310/api/tickets/`;
-	};
-
-	const checkForChanges = async () => {
-		const url = getApiUrl();
-		if (!url) return;
-
-		try {
-			const res = await fetchWithToken(url);
-			const data: TicketSnapshot[] = await res.json();
-
-			const tickets =
-				user?.role === "client"
-					? data.filter(
-							(t) =>
-								(t as unknown as { client_id: number }).client_id === user.id,
-						)
-					: data;
-
-			if (previousTickets.current.length > 0) {
-				const newNotifs: Notification[] = [];
-
-				for (const ticket of tickets) {
-					const prev = previousTickets.current.find((p) => p.id === ticket.id);
-					if (prev && prev.status !== ticket.status) {
-						newNotifs.push({
-							id: Date.now() + ticket.id,
-							ticketId: ticket.id,
-							ticketTitle: ticket.title,
-							oldStatus: prev.status,
-							newStatus: ticket.status,
-							seenAt: new Date().toLocaleTimeString("fr-FR"),
-						});
-					}
-				}
-
-				if (newNotifs.length > 0) {
-					setNotifications((prev) => [...newNotifs, ...prev]);
-				}
-			}
-
-			previousTickets.current = tickets.map((t) => ({
-				id: t.id,
-				status: t.status,
-				title: t.title,
-			}));
-		} catch (err) {
-			console.error("Erreur polling notifs:", err);
-		}
-	};
 
 	useEffect(() => {
 		if (!user) return;
-		checkForChanges();
-		const interval = setInterval(checkForChanges, POLLING_INTERVAL);
-		return () => clearInterval(interval);
+
+		const socket = io(API_URL, { withCredentials: true });
+		socketRef.current = socket;
+
+		// Rejoindre la room selon le rôle
+		socket.emit("join", { role: user.role, userId: user.id });
+
+		// Admin / technicien : nouveau ticket créé
+		if (user.role === "admin" || user.role === "technician") {
+			socket.on("new_ticket", (data: { id: number; title: string }) => {
+				setNotifications((prev) => [
+					{
+						type: "new_ticket",
+						id: Date.now(),
+						ticketId: data.id,
+						ticketTitle: data.title,
+						seenAt: new Date().toLocaleTimeString("fr-FR"),
+					},
+					...prev,
+				]);
+			});
+		}
+
+		// Client : changement de statut sur ses tickets
+		if (user.role === "client") {
+			socket.on(
+				"ticket_status_changed",
+				(data: {
+					ticketId: number;
+					ticketTitle: string;
+					oldStatus: string;
+					newStatus: string;
+				}) => {
+					setNotifications((prev) => [
+						{
+							type: "status_change",
+							id: Date.now(),
+							ticketId: data.ticketId,
+							ticketTitle: data.ticketTitle,
+							oldStatus: data.oldStatus,
+							newStatus: data.newStatus,
+							seenAt: new Date().toLocaleTimeString("fr-FR"),
+						},
+						...prev,
+					]);
+				},
+			);
+		}
+
+		return () => {
+			socket.disconnect();
+		};
 	}, [user]);
 
 	const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
-
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
-
+	const handleClose = () => setAnchorEl(null);
 	const handleClear = () => {
 		setNotifications([]);
 		handleClose();
+	};
+
+	const renderNotif = (notif: Notification) => {
+		if (notif.type === "new_ticket") {
+			return (
+				<Box key={notif.id}>
+					<Box sx={{ px: 2, py: 1.5 }}>
+						<Typography variant="body2" fontWeight={500}>
+							🎫 Nouveau ticket #{notif.ticketId}
+						</Typography>
+						<Typography variant="caption" color="text.secondary">
+							{notif.ticketTitle}
+						</Typography>
+						<Typography variant="caption" color="text.disabled" display="block">
+							{notif.seenAt}
+						</Typography>
+					</Box>
+					<Divider />
+				</Box>
+			);
+		}
+		return (
+			<Box key={notif.id}>
+				<Box sx={{ px: 2, py: 1.5 }}>
+					<Typography variant="body2" fontWeight={500}>
+						Ticket #{notif.ticketId} — {notif.ticketTitle}
+					</Typography>
+					<Typography variant="caption" color="text.secondary">
+						Statut passé de <strong>{STATUS_LABELS[notif.oldStatus]}</strong> à{" "}
+						<strong>{STATUS_LABELS[notif.newStatus]}</strong>
+					</Typography>
+					<Typography variant="caption" color="text.disabled" display="block">
+						{notif.seenAt}
+					</Typography>
+				</Box>
+				<Divider />
+			</Box>
+		);
 	};
 
 	return (
@@ -170,28 +199,7 @@ export default function NotificationPanel() {
 						</Typography>
 					</Box>
 				) : (
-					notifications.map((notif) => (
-						<Box key={notif.id}>
-							<Box sx={{ px: 2, py: 1.5 }}>
-								<Typography variant="body2" fontWeight={500}>
-									Ticket #{notif.ticketId} — {notif.ticketTitle}
-								</Typography>
-								<Typography variant="caption" color="text.secondary">
-									Statut passé de{" "}
-									<strong>{STATUS_LABELS[notif.oldStatus]}</strong> à{" "}
-									<strong>{STATUS_LABELS[notif.newStatus]}</strong>
-								</Typography>
-								<Typography
-									variant="caption"
-									color="text.disabled"
-									display="block"
-								>
-									{notif.seenAt}
-								</Typography>
-							</Box>
-							<Divider />
-						</Box>
-					))
+					notifications.map((notif) => renderNotif(notif))
 				)}
 			</Menu>
 		</>
