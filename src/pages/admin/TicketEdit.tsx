@@ -20,6 +20,17 @@ export default function TicketEdit() {
 	const { id } = useParams();
 	const { user } = useAuth();
 
+	const [title, setTitle] = useState("");
+	const [status, setStatus] = useState("");
+	const [description, setDescription] = useState("");
+	const [priority, setPriority] = useState("");
+	const [category_id, setCategoryId] = useState("");
+	// Conserver les valeurs originales du ticket
+	const [originalClientId, setOriginalClientId] = useState<number | null>(null);
+	const [originalTechnicianId, setOriginalTechnicianId] = useState<
+		number | null
+	>(null);
+
 	const redirectActionUser = () => {
 		if (user?.role === "admin") {
 			navigate("/tickets");
@@ -36,13 +47,6 @@ export default function TicketEdit() {
 		redirectActionUser();
 	};
 
-	const [title, setTitle] = useState("");
-	const [status, setStatus] = useState("");
-	const [description, setDescription] = useState("");
-	const [priority, setPriority] = useState("");
-	const [category_id, setCategoryId] = useState("");
-	const [_attachment, _setAttachment] = useState<File | null>(null);
-
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		await fetchWithToken(`${import.meta.env.VITE_API_URL}/api/tickets/${id}`, {
@@ -54,8 +58,9 @@ export default function TicketEdit() {
 				priority,
 				category_id,
 				status,
-				client_id: user?.id,
-				technician_id: null,
+				// Conserver le client et technicien d'origine, ne pas les écraser
+				client_id: originalClientId,
+				technician_id: originalTechnicianId,
 			}),
 		});
 		redirectActionUser();
@@ -70,13 +75,15 @@ export default function TicketEdit() {
 				setStatus(data.status);
 				setPriority(data.priority);
 				setCategoryId(data.category_id);
+				// Sauvegarder les valeurs originales
+				setOriginalClientId(data.client_id);
+				setOriginalTechnicianId(data.technician_id);
 			})
 			.catch((err) => console.error(err));
 	}, [id]);
 
 	return (
 		<Box sx={{ maxWidth: 1100, mx: "auto", px: 3, py: 4 }}>
-			{/* Header */}
 			<Typography variant="overline" color="text.secondary">
 				Ticket #{id}
 			</Typography>
@@ -84,7 +91,6 @@ export default function TicketEdit() {
 				Modifier le ticket
 			</Typography>
 
-			{/* Layout 2 colonnes */}
 			<Box
 				sx={{
 					display: "grid",
@@ -93,7 +99,6 @@ export default function TicketEdit() {
 					alignItems: "start",
 				}}
 			>
-				{/* Colonne gauche — Formulaire */}
 				<Paper
 					elevation={0}
 					variant="outlined"
@@ -158,7 +163,6 @@ export default function TicketEdit() {
 						</TextField>
 					</Stack>
 
-					{/* Actions */}
 					<Divider sx={{ my: 3 }} />
 					<Box
 						sx={{
@@ -181,7 +185,6 @@ export default function TicketEdit() {
 					</Box>
 				</Paper>
 
-				{/* Colonne droite — Pièces jointes + Commentaires */}
 				<Stack spacing={3}>
 					<AttachmentsPanel ticketId={String(id)} />
 					<Comments ticketId={Number(id)} />
