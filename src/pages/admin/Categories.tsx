@@ -13,6 +13,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { fetchWithToken } from "../../utils/api";
 import Category from "./CategoryCard";
 
 interface CategoryType {
@@ -25,7 +26,7 @@ export default function Categories() {
 	const [name, setName] = useState("");
 	const handleAdd = async () => {
 		const newData = { name };
-		await fetch("http://localhost:3310/api/categories/", {
+		await fetchWithToken(`${import.meta.env.VITE_API_URL}/api/categories/`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -36,7 +37,7 @@ export default function Categories() {
 		SetIsUpdate(true);
 	};
 	useEffect(() => {
-		fetch("http://localhost:3310/api/categories/")
+		fetchWithToken(`${import.meta.env.VITE_API_URL}/api/categories/`)
 			.then((response) => response.json())
 			.then((data) => setCategories(data))
 			.then(() => SetIsUpdate(false))
@@ -58,22 +59,29 @@ export default function Categories() {
 					direction="row"
 					spacing={2}
 					alignItems="center"
-					justifyContent="space-between"
-					marginY={2}
-					sx={{ mt: 5 }}
+					sx={{ mt: 3, mb: 2 }}
 				>
 					<TextField
 						label="Nom de la catégorie"
 						value={name}
 						onChange={(e) => setName(e.target.value)}
-						sx={{ mt: 2, width: "70%" }}
+						size="small"
+						sx={{ flex: 1, bgcolor: "white", borderRadius: 1 }}
 					/>
-					<Button type="submit" variant="contained" sx={{ width: "30%" }}>
+					<Button
+						type="submit"
+						variant="contained"
+						color="primary"
+						size="small"
+						sx={{ textTransform: "none" }}
+					>
 						Ajouter
 					</Button>
 				</Stack>
 			</form>
-
+			<Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+				{categories.length} catégorie{categories.length > 1 ? "s" : ""}
+			</Typography>
 			<TableContainer component={Paper} sx={{ mt: 2 }}>
 				<Table>
 					<TableHead>
@@ -82,8 +90,8 @@ export default function Categories() {
 								sx={{
 									width: "70%",
 									fontWeight: "bold",
-									bgcolor: "primary.main",
-									color: "white",
+									bgcolor: "#e8f0fe",
+									color: "text.secondary",
 									textAlign: "center",
 								}}
 							>
@@ -92,8 +100,8 @@ export default function Categories() {
 							<TableCell
 								sx={{
 									fontWeight: "bold",
-									bgcolor: "primary.main",
-									color: "white",
+									bgcolor: "#e8f0fe",
+									color: "text.secondary",
 									textAlign: "center",
 								}}
 							>
@@ -109,6 +117,13 @@ export default function Categories() {
 								SetIsUpdate={SetIsUpdate}
 							/>
 						))}
+						{categories.length === 0 && (
+							<TableRow>
+								<TableCell colSpan={2} align="center" sx={{ py: 4 }}>
+									Aucune catégorie disponible.
+								</TableCell>
+							</TableRow>
+						)}
 					</TableBody>
 				</Table>
 			</TableContainer>

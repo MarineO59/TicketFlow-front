@@ -7,31 +7,66 @@ import {
 	Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { fetchWithToken } from "../../utils/api";
 
 export default function TicketForm() {
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
-	const [priority, setPriority] = useState("");
 	const [category_id, setCategoryId] = useState("");
-	const [_attachment, setAttachment] = useState<File | null>(null); //  TODO à brancher avec la route attachments du back, puis enlever le _ pour éviter les warnings de variable non utilisée
+	const [attachment, setAttachment] = useState<File | null>(null);
+	const navigate = useNavigate();
+	const { user } = useAuth();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		//TODO:  ajouter l'attachment dansFormData quand la  route du back sera prête
-		await fetch("http://localhost:3310/api/tickets", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				title,
-				description,
-				priority,
-				category_id,
-				status: "open", // TODO: sera géré par le back par défaut
-				client_id: 3, // TODO: remplacer par currentUser.is depuis AuthContext
-				technician_id: null, //TODO: sera assigné par l'admin plus tard
-			}),
-		});
+		const res = await fetchWithToken(
+			`${import.meta.env.VITE_API_URL}/api/tickets`,
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					title,
+					description,
+					category_id,
+					status: "open",
+					priority: "medium", // priorité par défaut, définie par l'admin/tech
+					client_id: user?.id,
+					technician_id: null,
+				}),
+			},
+		);
+
+		if (!res.ok) {
+			window.alert("Erreur lors de la création du ticket");
+			return;
+		}
+
+		const ticket = await res.json();
+
+		if (attachment && ticket.id) {
+			const formData = new FormData();
+			formData.append("file", attachment);
+
+			const uploadRes = await fetchWithToken(
+				`${import.meta.env.VITE_API_URL}/api/attachments/tickets/${ticket.id}/attachments`,
+				{
+					method: "POST",
+					body: formData,
+				},
+			);
+
+			if (!uploadRes.ok) {
+				window.alert("Ticket créé mais l'upload du fichier a échoué");
+				navigate("/client/dashboard");
+				return;
+			}
+		}
+
+		window.alert("Ticket créé et envoyé à nos équipes");
+		navigate("/client/dashboard");
 	};
 
 	return (
@@ -48,6 +83,7 @@ export default function TicketForm() {
 				<TextField
 					label="Titre"
 					fullWidth
+					required
 					sx={{ mb: 2 }}
 					value={title}
 					onChange={(e) => setTitle(e.target.value)}
@@ -56,6 +92,7 @@ export default function TicketForm() {
 				<TextField
 					label="Description"
 					fullWidth
+					required
 					multiline
 					rows={4}
 					sx={{ mb: 2 }}
@@ -74,22 +111,9 @@ export default function TicketForm() {
 				/>
 
 				<TextField
-					label="Priorité"
-					fullWidth
-					select
-					sx={{ mb: 2 }}
-					value={priority}
-					onChange={(e) => setPriority(e.target.value)}
-				>
-					<MenuItem value="low">Basse</MenuItem>
-					<MenuItem value="medium">Moyenne</MenuItem>
-					<MenuItem value="high">Haute</MenuItem>
-					<MenuItem value="critical">Critique</MenuItem>
-				</TextField>
-
-				<TextField
 					label="Catégorie"
 					fullWidth
+					required
 					select
 					sx={{ mb: 2 }}
 					value={category_id}

@@ -3,6 +3,8 @@ import SendIcon from "@mui/icons-material/Send";
 import {
 	Avatar,
 	Box,
+	Checkbox,
+	FormControlLabel,
 	IconButton,
 	InputAdornment,
 	List,
@@ -12,6 +14,8 @@ import {
 	Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { fetchWithToken } from "../../utils/api";
 
 interface CommentType {
 	id: number;
@@ -20,46 +24,63 @@ interface CommentType {
 	ticket_id: number;
 	created_at: string;
 	is_internal: number;
+	firstname: string;
+	lastname: string;
+	role: string;
 }
 
-export default function Comments() {
+interface CommentsProps {
+	ticketId: number;
+}
+
+export default function Comments({ ticketId }: CommentsProps) {
 	const [comment, setComment] = useState<CommentType[]>([]);
 	const [input, setInput] = useState("");
+	const [isInternal, setIsInternal] = useState(false);
+	const { user } = useAuth();
+	const userRole = user?.role ?? "";
 
 	useEffect(() => {
 		const afficheComments = async () => {
-			const response = await fetch("http://localhost:3310/api/comments");
+			const response = await fetchWithToken(
+				`${import.meta.env.VITE_API_URL}/api/comments/ticket/${ticketId}`,
+			);
 			const data = await response.json();
 			setComment(data);
 		};
 		afficheComments();
-	}, []);
+	}, [ticketId]);
 
 	const handleDelete = async (id: number) => {
-		const response = await fetch(`http://localhost:3310/api/comments/${id}`, {
-			method: "DELETE",
-		});
+		const response = await fetchWithToken(
+			`${import.meta.env.VITE_API_URL}/api/comments/${id}`,
+			{
+				method: "DELETE",
+			},
+		);
 		if (response.ok) {
 			setComment(comment.filter((c) => c.id !== id));
 		}
 	};
 
 	const sendMessage = async () => {
-		const response = await fetch(`http://localhost:3310/api/comments`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
+		const response = await fetchWithToken(
+			`${import.meta.env.VITE_API_URL}/api/comments`,
+			{
+				method: "POST",
+				body: JSON.stringify({
+					content: input,
+					author_id: user?.id,
+					ticket_id: ticketId,
+					is_internal: isInternal,
+				}),
 			},
-			body: JSON.stringify({
-				content: input,
-				author_id: 1,
-				ticket_id: 1,
-			}),
-		});
+		);
 		if (response.ok) {
 			const nouveauComment = await response.json();
 			setComment([...comment, nouveauComment]);
 			setInput("");
+			setIsInternal(false);
 		}
 	};
 
@@ -96,10 +117,13 @@ export default function Comments() {
 						height: 36,
 					}}
 				>
-					S
+					{user?.firstname?.[0].toUpperCase()}
+					{user?.lastname?.[0].toUpperCase()}
 				</Avatar>
 				<Box>
-					<Typography variant="subtitle2">Support TicketFlow</Typography>
+					<Typography variant="subtitle2">
+						{user?.firstname} {user?.lastname}
+					</Typography>
 					<Typography variant="caption" color="success.main">
 						● En ligne
 					</Typography>
@@ -117,7 +141,7 @@ export default function Comments() {
 				}}
 			>
 				{comment.map((msg) => {
-					const isUser = msg.author_id === 1;
+					const isUser = msg.author_id === user?.id;
 					return (
 						<ListItem
 							key={msg.id}
@@ -149,11 +173,23 @@ export default function Comments() {
 											width: 20,
 											height: 20,
 											fontSize: 10,
-											bgcolor: isUser ? "success.light" : "primary.light",
-											color: isUser ? "success.dark" : "primary.dark",
+											bgcolor: isUser
+												? userRole === "admin"
+													? "success.light"
+													: userRole === "technician"
+														? "primary.light"
+														: "warning.light"
+												: msg.role === "admin"
+													? "success.light"
+													: msg.role === "technician"
+														? "primary.light"
+														: "warning.light",
+											color: "white",
 										}}
 									>
-										{isUser ? "M" : "S"}
+										{isUser
+											? `${user?.firstname?.[0].toUpperCase()}${user?.lastname?.[0].toUpperCase()}`
+											: `${msg.firstname?.[0].toUpperCase()}${msg.lastname?.[0].toUpperCase()}`}
 									</Avatar>
 									<Typography variant="caption" color="text.disabled">
 										{msg.created_at}
@@ -185,13 +221,25 @@ export default function Comments() {
 			<Box
 				sx={{ px: 2, py: 1.5, borderTop: "1px solid", borderColor: "divider" }}
 			>
+				{(userRole === "admin" || userRole === "technician") && (
+					<FormControlLabel
+						control={
+							<Checkbox
+								size="small"
+								checked={isInternal}
+								onChange={(e) => setIsInternal(e.target.checked)}
+							/>
+						}
+						label="Commentaire interne"
+					/>
+				)}
 				<TextField
 					fullWidth
 					size="small"
 					placeholder="Écrire un commentaire..."
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
-					onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+					onKeyDown={(e) => e.key === "Enter" && input.trim() && sendMessage()}
 					sx={{ "& .MuiOutlinedInput-root": { borderRadius: 5 } }}
 					slotProps={{
 						input: {

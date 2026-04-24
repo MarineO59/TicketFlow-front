@@ -1,5 +1,6 @@
 import {
 	Box,
+	Chip,
 	Paper,
 	Table,
 	TableBody,
@@ -11,10 +12,9 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { fetchWithToken } from "../../utils/api";
 import {
 	formatDate,
-	translateCategory,
 	translatePriority,
 	translateStatus,
 } from "../../utils/translations";
@@ -25,43 +25,79 @@ interface TicketType {
 	status: string;
 	priority: string;
 	category_id: number;
+	category_name: string;
 	created_at: string;
 	resolved_at: string | null;
 }
 
+const STATUS_COLOR: Record<
+	string,
+	"default" | "primary" | "warning" | "success" | "error" | "info"
+> = {
+	open: "info",
+	in_progress: "warning",
+	waiting: "default",
+	resolved: "success",
+};
+
+const PRIORITY_COLOR: Record<
+	string,
+	"default" | "warning" | "success" | "error"
+> = {
+	high: "error",
+	medium: "warning",
+	low: "success",
+};
+
 export default function Tickets() {
 	const [ticket, setTicket] = useState<TicketType[]>([]);
 	const navigate = useNavigate();
-	const { token } = useAuth();
 
 	useEffect(() => {
-		fetch("http://localhost:3310/api/tickets/", {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		})
+		fetchWithToken(`${import.meta.env.VITE_API_URL}/api/tickets/`)
 			.then((response) => response.json())
 			.then((data) => setTicket(data))
 			.catch((error) => console.error(error));
 	}, []);
 
 	return (
-		<Box
-			sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-		>
-			<Typography variant="h4" gutterBottom>
-				Tickets List
+		<Box sx={{ p: { xs: 2, sm: 3 } }}>
+			<Typography variant="h5" fontWeight={600} gutterBottom>
+				Tickets
 			</Typography>
-			<TableContainer component={Paper} sx={{ width: "80%" }}>
+			<Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
+				{ticket.length} ticket{ticket.length > 1 ? "s" : ""}
+			</Typography>
+
+			<TableContainer
+				component={Paper}
+				elevation={0}
+				sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}
+			>
 				<Table>
 					<TableHead>
-						<TableRow>
-							<TableCell>ID</TableCell>
-							<TableCell>Titre</TableCell>
-							<TableCell>Status</TableCell>
-							<TableCell>Priority</TableCell>
-							<TableCell>Category</TableCell>
-							<TableCell>Created At</TableCell>
+						<TableRow sx={{ bgcolor: "#e8f0fe" }}>
+							{[
+								"ID",
+								"Titre",
+								"Statut",
+								"Priorité",
+								"Catégorie",
+								"Créé le",
+							].map((h) => (
+								<TableCell
+									key={h}
+									sx={{
+										fontSize: "0.7rem",
+										fontWeight: 600,
+										textTransform: "uppercase",
+										letterSpacing: "0.07em",
+										color: "text.secondary",
+									}}
+								>
+									{h}
+								</TableCell>
+							))}
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -71,15 +107,62 @@ export default function Tickets() {
 								onClick={() => navigate(`/tickets/${t.id}/edit`)}
 								sx={{
 									cursor: "pointer",
+									"&:last-child td": { border: 0 },
 									"&:hover": { bgcolor: "action.hover" },
 								}}
 							>
-								<TableCell>{t.id}</TableCell>
-								<TableCell>{t.title}</TableCell>
-								<TableCell>{translateStatus(t.status)}</TableCell>
-								<TableCell>{translatePriority(t.priority)}</TableCell>
-								<TableCell>{translateCategory(t.category_id)}</TableCell>
-								<TableCell>{formatDate(t.created_at)}</TableCell>
+								<TableCell
+									sx={{
+										color: "text.disabled",
+										fontSize: "0.75rem",
+										fontFamily: "monospace",
+									}}
+								>
+									#{t.id}
+								</TableCell>
+								<TableCell>
+									<Typography
+										variant="body2"
+										fontWeight={500}
+										noWrap
+										sx={{ maxWidth: 220 }}
+									>
+										{t.title}
+									</Typography>
+								</TableCell>
+								<TableCell>
+									<Chip
+										label={translateStatus(t.status)}
+										color={STATUS_COLOR[t.status] ?? "default"}
+										size="small"
+										sx={{ borderRadius: "99px", fontSize: "0.7rem" }}
+									/>
+								</TableCell>
+								<TableCell>
+									<Chip
+										label={translatePriority(t.priority)}
+										color={PRIORITY_COLOR[t.priority] ?? "default"}
+										size="small"
+										sx={{ borderRadius: "99px", fontSize: "0.7rem" }}
+									/>
+								</TableCell>
+								<TableCell>
+									<Chip
+										label={t.category_name}
+										size="small"
+										variant="outlined"
+										sx={{ borderRadius: 1.5, fontSize: "0.7rem" }}
+									/>
+								</TableCell>
+								<TableCell
+									sx={{
+										color: "text.secondary",
+										fontSize: "0.8rem",
+										whiteSpace: "nowrap",
+									}}
+								>
+									{formatDate(t.created_at)}
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

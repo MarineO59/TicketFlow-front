@@ -1,6 +1,19 @@
-import { IconButton, TableCell, TableRow, TextField } from "@mui/material";
+import {
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+	IconButton,
+	MenuItem,
+	TableCell,
+	TableRow,
+	TextField,
+} from "@mui/material";
 import { Check, PencilLine, Trash2, UserCheck } from "lucide-react";
 import { useState } from "react";
+import { fetchWithToken } from "../../utils/api";
 
 interface UserType {
 	id: number;
@@ -8,6 +21,7 @@ interface UserType {
 	lastname: string;
 	email: string;
 	password: string;
+	role: string;
 }
 
 interface Props {
@@ -21,6 +35,8 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 	const [firstname, setFirstname] = useState("");
 	const [lastname, setLastname] = useState("");
 	const [email, setEmail] = useState("");
+	const [role, setRole] = useState("");
+	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const handleEdit = () => {
 		console.log(user);
@@ -28,12 +44,15 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 	};
 
 	const handleDelete = async () => {
-		const response = await fetch(`http://localhost:3310/api/users/${user.id}`, {
-			method: "DELETE",
-			headers: {
-				"content-Type": "application/json",
+		const response = await fetch(
+			`${import.meta.env.VITE_API_URL}/api/users/${user.id}`,
+			{
+				method: "DELETE",
+				headers: {
+					"content-Type": "application/json",
+				},
 			},
-		});
+		);
 
 		if (response.ok) {
 			SetIsUpdate((prev) => !prev);
@@ -46,15 +65,19 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 			firstname: firstname || user.firstname,
 			lastname: lastname || user.lastname,
 			email: email || user.email,
+			role: role || user.role,
 		};
 
-		const response = await fetch(`http://localhost:3310/api/users/${user.id}`, {
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
+		const response = await fetchWithToken(
+			`${import.meta.env.VITE_API_URL}/api/users/${user.id}`,
+			{
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(newData),
 			},
-			body: JSON.stringify(newData),
-		});
+		);
 
 		if (response.ok) {
 			SetIsUpdate((prev) => !prev);
@@ -63,6 +86,11 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 			setLastname("");
 			setEmail("");
 		}
+	};
+	const ROLE_LABELS: Record<string, string> = {
+		admin: "Administrateur",
+		technician: "Technicien",
+		client: "Client",
 	};
 
 	return (
@@ -112,6 +140,29 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 				)}
 			</TableCell>
 
+			<TableCell>
+				{isEdit ? (
+					user.role === "client" ? (
+						(ROLE_LABELS[user.role] ?? user.role)
+					) : (
+						<TextField
+							select
+							size="small"
+							variant="outlined"
+							type="role"
+							name="role"
+							value={role ? role : user.role}
+							onChange={(event) => setRole(event.target.value)}
+						>
+							<MenuItem value="admin">Admin</MenuItem>
+							<MenuItem value="technician">Technicien</MenuItem>
+						</TextField>
+					)
+				) : (
+					(ROLE_LABELS[user.role] ?? user.role)
+				)}
+			</TableCell>
+
 			<TableCell sx={{ display: "flex", gap: 0.5 }}>
 				{isEdit ? (
 					<IconButton color="success" onClick={handleSave}>
@@ -125,10 +176,27 @@ const User = ({ user, setCurrentUser, SetIsUpdate }: Props) => {
 				<IconButton color="info" onClick={() => setCurrentUser(user)}>
 					<UserCheck size={18} />
 				</IconButton>
-				<IconButton color="error" onClick={handleDelete}>
+				<IconButton color="error" onClick={() => setOpenConfirm(true)}>
 					<Trash2 size={18} />
 				</IconButton>
 			</TableCell>
+			<Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+				<DialogTitle>Confirmer la suppression</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action
+						est irréversible.
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setOpenConfirm(false)} color="primary">
+						Annuler
+					</Button>
+					<Button onClick={handleDelete} color="error">
+						Supprimer
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</TableRow>
 	);
 };
